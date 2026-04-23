@@ -1,7 +1,6 @@
 import random
 import logging
-from django.utils.timezone import now as tz_now
-import datetime
+from django.utils import timezone
 from .whatsapp import send_whatsapp_message
 
 logger = logging.getLogger(__name__)
@@ -31,7 +30,7 @@ def store_otp(request, phone_number: str, otp: str):
     request.session['otp_data'] = {
         'otp': otp,
         'phone': phone_number,
-        'expires_at': expires_at.isoformat(),
+        'expires_at': (timezone.now() + timezone.timedelta(minutes=OTP_EXPIRY_MINUTES)).isoformat(),
         'attempts': 0,
     }
 
@@ -45,7 +44,7 @@ def verify_otp(request, phone_number: str, submitted_otp: str) -> tuple[bool, st
     if data['phone'] != phone_number:
         return False, "Phone number mismatch. Please start again."
 
-    if tz_now() > datetime.datetime.fromisoformat(data['expires_at']):
+    if timezone.now() > timezone.datetime.fromisoformat(data['expires_at']).replace(tzinfo=timezone.utc):
         clear_otp(request)
         return False, "OTP has expired. Please request a new one."
 
