@@ -1,0 +1,763 @@
+ERROR 2026-04-22 15:23:51,937 log Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such column: habits_habit.current_streak
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/contrib/auth/decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "/Users/mymac/Documents/Mr Fix It All/TURF/habit_tracker/habits/views.py", line 181, in habit_list
+    for habit in habits:
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/models/query.py", line 400, in __iter__
+    self._fetch_all()
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/models/query.py", line 1886, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such column: habits_habit.current_streak
+ERROR 2026-04-22 15:23:51,954 basehttp "GET /dashboard/ HTTP/1.1" 500 142630
+ERROR 2026-04-22 15:25:20,349 log Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 175, in render
+    return self._render(context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 167, in _render
+    return self.nodelist.render(context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader_tags.py", line 132, in render
+    compiled_parent = self.get_parent(context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader_tags.py", line 129, in get_parent
+    return self.find_template(parent, context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader_tags.py", line 107, in find_template
+    template, origin = context.template.engine.find_template(
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/engine.py", line 161, in find_template
+    raise TemplateDoesNotExist(name, tried=tried)
+django.template.exceptions.TemplateDoesNotExist: habits/base.html
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/contrib/auth/decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "/Users/mymac/Documents/Mr Fix It All/TURF/habit_tracker/habits/views.py", line 190, in habit_list
+    return render(request, "habits/habit_list.html", {"habits": habits, "today": today})
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/backends/django.py", line 63, in render
+    reraise(exc, self.backend)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/backends/django.py", line 84, in reraise
+    raise new from exc
+django.template.exceptions.TemplateDoesNotExist: habits/base.html
+ERROR 2026-04-22 15:25:20,367 basehttp "GET /dashboard/ HTTP/1.1" 500 144608
+ERROR 2026-04-22 15:26:36,668 log Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 505, in parse
+    compile_func = self.tags[command]
+KeyError: 'endblock'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/contrib/auth/decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "/Users/mymac/Documents/Mr Fix It All/TURF/habit_tracker/habits/views.py", line 190, in habit_list
+    return render(request, "habits/habit_list.html", {"habits": habits, "today": today})
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/backends/django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 200, in compile_nodelist
+    return parser.parse()
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 507, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 568, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 389: 'endblock'. Did you forget to register or load this tag?
+ERROR 2026-04-22 15:26:36,681 basehttp "GET /dashboard/ HTTP/1.1" 500 161424
+ERROR 2026-04-22 16:22:28,140 log Internal Server Error: /login/
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/axes/middleware.py", line 51, in __call__
+    response = get_lockout_response(request, credentials)  # type: ignore
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/axes/helpers.py", line 490, in get_lockout_response
+    return render(request, settings.AXES_LOCKOUT_TEMPLATE, context, status=status)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: habits/lockout.html
+ERROR 2026-04-22 16:22:28,154 basehttp "POST /login/ HTTP/1.1" 500 91247
+ERROR 2026-04-22 18:33:49,871 log Internal Server Error: /
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django_ratelimit/decorators.py", line 27, in _wrapped
+    return fn(request, *args, **kw)
+  File "/Users/mymac/Documents/Mr Fix It All/TURF/habit_tracker/habits/views.py", line 126, in index
+    if not whatsapp_success:
+NameError: name 'whatsapp_success' is not defined
+ERROR 2026-04-22 18:33:49,879 basehttp "POST / HTTP/1.1" 500 82819
+ERROR 2026-04-22 19:10:14,625 views Registration failed for 2348168590957: name 'whatsapp_msg' is not defined
+Traceback (most recent call last):
+  File "/Users/mymac/Documents/Mr Fix It All/TURF/habit_tracker/habits/views.py", line 117, in index
+    logger.warning(f"WhatsApp notification failed for {clean_number}: {whatsapp_msg}")
+NameError: name 'whatsapp_msg' is not defined
+ERROR 2026-04-23 13:51:10,467 log Internal Server Error: /habits/
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/contrib/auth/decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "/Users/mymac/Documents/Mr Fix It All/TURF/habit_tracker/habits/views.py", line 202, in habit_list
+    return render(request, "habits/habit_list.html", {"habits": habits, "today": today})
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 175, in render
+    return self._render(context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 167, in _render
+    return self.nodelist.render(context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/urls/resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'add_habit' not found. 'add_habit' is not a valid view function or pattern name.
+ERROR 2026-04-23 13:51:10,501 basehttp "GET /habits/ HTTP/1.1" 500 134026
+ERROR 2026-04-23 14:01:17,037 log Internal Server Error: /habit/add/
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/contrib/auth/decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django_ratelimit/decorators.py", line 27, in _wrapped
+    return fn(request, *args, **kw)
+  File "/Users/mymac/Documents/Mr Fix It All/TURF/habit_tracker/habits/views.py", line 259, in add_habit
+    return render(request, "habits/add_habit.html")
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: habits/add_habit.html
+ERROR 2026-04-23 14:01:17,065 basehttp "GET /habit/add/ HTTP/1.1" 500 99540
+ERROR 2026-04-23 14:53:08,214 whatsapp Green-API Exception: 'NoneType' object has no attribute 'get'
+ERROR 2026-04-23 15:30:36,776 log Internal Server Error: /maintenance/daily-check/
+Traceback (most recent call last):
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mymac/Documents/Mr Fix It All/TURF/habit_tracker/habits/views.py", line 302, in maintenance_trigger
+    if key != settings.MAINTENANCE_KEY:
+  File "/Users/mymac/.local/share/virtualenvs/habit_tracker-rbF_u6by/lib/python3.9/site-packages/django/conf/__init__.py", line 104, in __getattr__
+    val = getattr(_wrapped, name)
+AttributeError: 'Settings' object has no attribute 'MAINTENANCE_KEY'
+ERROR 2026-04-23 15:30:36,782 basehttp "GET /maintenance/daily-check/?key=kokolet HTTP/1.1" 500 79433
+ERROR 2026-04-23 15:32:09,893 views AI Nudge failed for 2348160382028: 'Habit' object has no attribute 'misses_count'
+ERROR 2026-04-23 15:32:09,894 views AI Nudge failed for 2348145858941: 'Habit' object has no attribute 'misses_count'
+ERROR 2026-04-23 15:32:09,896 views AI Nudge failed for 2348145858941: 'Habit' object has no attribute 'misses_count'
+ERROR 2026-04-23 15:32:09,898 views AI Nudge failed for 2348145858941: 'Habit' object has no attribute 'misses_count'
+ERROR 2026-04-23 15:34:10,391 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:34:10,898 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:34:13,079 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:34:14,070 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:34:16,735 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:34:17,767 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:34:20,158 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:34:21,238 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:35:46,342 views AI Nudge failed for 2348160382028: 'Settings' object has no attribute 'GEMINI_KEY'
+ERROR 2026-04-23 15:35:46,345 views AI Nudge failed for 2348145858941: 'Settings' object has no attribute 'GEMINI_KEY'
+ERROR 2026-04-23 15:35:46,348 views AI Nudge failed for 2348145858941: 'Settings' object has no attribute 'GEMINI_KEY'
+ERROR 2026-04-23 15:35:46,349 views AI Nudge failed for 2348145858941: 'Settings' object has no attribute 'GEMINI_KEY'
+ERROR 2026-04-23 15:36:47,568 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:36:48,520 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:36:51,227 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:36:52,405 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:36:54,676 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:36:55,827 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:36:58,796 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:36:59,252 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:39:44,950 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:39:45,998 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:39:48,184 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:39:49,192 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:39:51,632 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:39:52,604 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:39:55,124 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:39:56,149 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:43:32,791 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:43:33,462 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:43:35,428 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:43:36,181 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:43:38,161 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:43:38,825 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:43:41,924 ai_service Gemini gemini-1.5-flash failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:43:43,003 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 400 Client Error: Bad Request for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=your_gemini_key_here
+ERROR 2026-04-23 15:48:12,120 ai_service Gemini gemini-1.5-flash failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:48:13,736 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:48:15,979 ai_service Gemini gemini-1.5-flash failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:48:16,676 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:48:18,758 ai_service Gemini gemini-1.5-flash failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:48:19,519 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:48:22,071 ai_service Gemini gemini-1.5-flash failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:48:22,811 ai_service Gemini gemini-2.0-flash-exp failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:53:55,591 ai_service Gemini gemini-3.1-flash-lite failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:53:58,865 ai_service Gemini gemini-2.5-flash failed for habit nudge: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:54:01,132 ai_service Gemini gemini-3.1-flash-lite failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:54:03,249 ai_service Gemini gemini-2.5-flash failed for habit nudge: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:54:05,628 ai_service Gemini gemini-3.1-flash-lite failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:54:23,352 ai_service Gemini gemini-3.1-flash-lite failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:54:25,985 ai_service Gemini gemini-2.5-flash failed for habit nudge: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:56:36,198 ai_service Gemini gemini-3.1-flash-lite failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:56:48,349 ai_service Gemini gemini-3.1-flash-lite failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:56:56,090 ai_service Gemini gemini-3.1-flash-lite failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 15:57:04,818 ai_service Gemini gemini-3.1-flash-lite failed for habit nudge: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:01:50,155 ai_service Gemini gemini-2.0-flash-exp failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:01:50,180 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-2.0-flash-exp is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:01:51,327 ai_service Gemini gemini-1.5-flash failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:01:51,327 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:01:53,646 ai_service Gemini gemini-2.0-flash-exp failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:01:53,647 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-2.0-flash-exp is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:01:55,205 ai_service Gemini gemini-1.5-flash failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:01:55,205 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:01:57,663 ai_service Gemini gemini-2.0-flash-exp failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:01:57,663 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-2.0-flash-exp is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:01:58,769 ai_service Gemini gemini-1.5-flash failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:01:58,769 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:02:01,376 ai_service Gemini gemini-2.0-flash-exp failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:02:01,377 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-2.0-flash-exp is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:02:02,467 ai_service Gemini gemini-1.5-flash failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:02:02,468 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:04:08,879 ai_service Gemini gemini-3.1-flash-lite failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:04:08,883 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-lite is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:04:10,025 ai_service Gemini gemini-2.5-flash failed: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:04:10,025 ai_service Google API Error Body: {
+  "error": {
+    "code": 503,
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "status": "UNAVAILABLE"
+  }
+}
+
+ERROR 2026-04-23 16:04:12,037 ai_service Gemini gemini-3.1-flash-lite failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:04:12,047 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-lite is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:04:15,764 ai_service Gemini gemini-2.5-flash failed: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:04:15,764 ai_service Google API Error Body: {
+  "error": {
+    "code": 503,
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "status": "UNAVAILABLE"
+  }
+}
+
+ERROR 2026-04-23 16:04:18,034 ai_service Gemini gemini-3.1-flash-lite failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:04:18,035 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-lite is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:04:20,599 ai_service Gemini gemini-2.5-flash failed: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:04:20,600 ai_service Google API Error Body: {
+  "error": {
+    "code": 503,
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "status": "UNAVAILABLE"
+  }
+}
+
+ERROR 2026-04-23 16:04:22,560 ai_service Gemini gemini-3.1-flash-lite failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:04:22,560 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-lite is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:04:26,276 ai_service Gemini gemini-2.5-flash failed: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:04:26,280 ai_service Google API Error Body: {
+  "error": {
+    "code": 503,
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "status": "UNAVAILABLE"
+  }
+}
+
+ERROR 2026-04-23 16:05:48,255 ai_service Gemini gemini-1.5-flash failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:05:48,259 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:05:49,587 ai_service Gemini gemini-1.5-flash-latest failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:05:49,588 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:05:58,858 ai_service Gemini gemini-2.0-flash-001 failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:05:58,858 ai_service Google API Error Body: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 816.732823ms.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count",
+            "quotaId": "GenerateContentInputTokensPerModelPerMinute-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerMinutePerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "model": "gemini-2.0-flash",
+              "location": "global"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "0s"
+      }
+    ]
+  }
+}
+
+ERROR 2026-04-23 16:06:00,129 ai_service Gemini gemini-3.1-flash-lite-001 failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-001:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:06:00,129 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-lite-001 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:06:10,689 ai_service Gemini gemini-3.1-flash-lite-preview failed: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:06:10,690 ai_service Google API Error Body: {
+  "error": {
+    "code": 503,
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "status": "UNAVAILABLE"
+  }
+}
+
+ERROR 2026-04-23 16:06:13,080 ai_service Gemini gemini-1.5-flash failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:06:13,081 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:06:14,439 ai_service Gemini gemini-1.5-flash-latest failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:06:14,439 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:06:23,873 ai_service Gemini gemini-2.0-flash-001 failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:06:23,874 ai_service Google API Error Body: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 35.798459313s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count",
+            "quotaId": "GenerateContentInputTokensPerModelPerMinute-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerMinutePerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "35s"
+      }
+    ]
+  }
+}
+
+ERROR 2026-04-23 16:06:25,073 ai_service Gemini gemini-3.1-flash-lite-001 failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-001:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:06:25,073 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-lite-001 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:06:46,143 ai_service Gemini gemini-1.5-flash failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:06:46,143 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:06:47,857 ai_service Gemini gemini-1.5-flash-latest failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:06:47,858 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:07:00,813 ai_service Gemini gemini-2.0-flash-001 failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:07:00,814 ai_service Google API Error Body: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 58.913030867s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerMinutePerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count",
+            "quotaId": "GenerateContentInputTokensPerModelPerMinute-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "58s"
+      }
+    ]
+  }
+}
+
+ERROR 2026-04-23 16:07:02,181 ai_service Gemini gemini-3.1-flash-lite-001 failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-001:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:07:02,182 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-lite-001 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:07:21,187 ai_service Gemini gemini-1.5-flash failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:07:21,188 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:07:21,680 ai_service Gemini gemini-1.5-flash-latest failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:07:21,682 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+ERROR 2026-04-23 16:07:31,181 ai_service Gemini gemini-2.0-flash-001 failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:07:31,182 ai_service Google API Error Body: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 28.435434922s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerMinutePerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count",
+            "quotaId": "GenerateContentInputTokensPerModelPerMinute-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "28s"
+      }
+    ]
+  }
+}
+
+ERROR 2026-04-23 16:07:32,293 ai_service Gemini gemini-3.1-flash-lite-001 failed: 404 Client Error: Not Found for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-001:generateContent?key=AIzaSyBsFTjAugRzhJmUKzSM7ro5DjfA4aKcP6A
+ERROR 2026-04-23 16:07:32,293 ai_service Google API Error Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-lite-001 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+

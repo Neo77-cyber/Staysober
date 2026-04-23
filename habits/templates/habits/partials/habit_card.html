@@ -1,0 +1,28 @@
+<div class="habit-card {% if habit.marked_today %}done{% endif %}" 
+     id="habit-{{ habit.id }}"
+     data-habit-id="{{ habit.id }}"
+     data-marked="{{ habit.marked_today|yesno:'true,false' }}">
+
+    <div class="habit-body">
+        <span class="habit-category">{{ habit.get_category_display }}</span>
+        <span class="habit-name">{{ habit.name }}</span>
+
+        <div class="streak-info">
+            <div class="streak-flame">
+                <span class="streak-number" id="streak-{{ habit.id }}">{{ habit.current_streak }}</span>
+                <span class="streak-label"> day streak</span>
+            </div>
+            <div class="miss-count {% if habit.missed_count >= 2 %}danger{% elif habit.missed_count == 1 %}warn{% endif %}">
+                {{ habit.missed_count }}/3 Misses
+            </div>
+        </div>
+
+        {% if habit.marked_today %}
+            <div class="done-badge"> CLOCKED IN</div>
+        {% else %}
+            <button class="clock-in-btn" onclick="handleClockIn(this)">
+                Tap to clock in
+            </button>
+        {% endif %}
+    </div>
+</div>

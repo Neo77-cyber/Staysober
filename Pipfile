@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+django-ratelimit = "*"
+whatsapp-api-client-python = "*"
+django-environ = "*"
+django-axes = "*"
+phonenumbers = "*"
+django-auditlog = "*"
+tenacity = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+whitenoise = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

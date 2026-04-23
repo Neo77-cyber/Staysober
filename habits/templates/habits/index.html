@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stay Sober | Home</title>
+    <style>
+        :root { 
+            --primary: #00d1b2; 
+            --dark: #1a1a1a; 
+            --card-bg: #222;
+            --border: #333;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--dark); 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+        }
+
+        .hero { text-align: center; width: 100%; max-width: 420px; padding: 20px; }
+        h1 { font-size: 2.5rem; margin-bottom: 5px; letter-spacing: -1px; color: var(--primary); }
+        p { color: #888; margin-bottom: 30px; font-size: 0.95rem; }
+
+        h3 { color: #888; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 15px; text-align: left; letter-spacing: 1px; }
+
+        /* Unified Phone Input Styling */
+        .phone-container {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0 15px;
+            transition: 0.3s;
+            margin-bottom: 25px;
+        }
+
+        .phone-container:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 209, 178, 0.1);
+        }
+
+        .prefix { color: #666; font-weight: bold; margin-right: 5px; }
+
+        .phone-container input {
+            background: transparent;
+            border: none;
+            padding: 15px 5px;
+            width: 100%;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* Habit Selection Styling */
+        .habit-options { text-align: left; margin-bottom: 20px; }
+        
+        .radio-card { 
+            display: flex; 
+            align-items: center;
+            background: var(--card-bg); 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 10px; 
+            cursor: pointer; 
+            border: 1px solid var(--border); 
+            transition: 0.2s;
+        }
+
+        .radio-card:hover { border-color: #555; }
+        .radio-card:has(input:checked) { 
+            border-color: var(--primary); 
+            background: rgba(0, 209, 178, 0.05); 
+        }
+
+        .radio-card input { margin-right: 12px; accent-color: var(--primary); }
+
+        #custom_habit { 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 12px; 
+            border: 1px solid var(--primary); 
+            background: #111; 
+            color: white; 
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        button { 
+            width: 100%; 
+            padding: 18px; 
+            border-radius: 12px; 
+            border: none; 
+            background: var(--primary); 
+            color: var(--dark); 
+            font-weight: 800; 
+            font-size: 1rem; 
+            text-transform: uppercase;
+            cursor: pointer; 
+            transition: 0.3s; 
+        }
+
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(15, 23, 42, 0.3);
+    border-radius: 50%;
+    border-top-color: #0f172a; 
+    animation: spin 0.8s linear infinite;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+    <h1>STAY SOBER</h1>
+    <p>AI-powered habit tracking via WhatsApp.</p>
+    
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if messages %}
+            <div class="messages-container" style="margin-bottom: 20px;">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" style="background: #ff4d4d; color: white; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; border-left: 5px solid #b30000; text-align: left;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <h3>Step 1: Your Number</h3>
+        <div class="phone-container">
+            <span class="prefix">+234</span>
+            <input type="text" name="identifier" placeholder="8123456789" required 
+                pattern="[0-9]{10}" title="Enter the 10 digits after the 0" maxlength="10">
+        </div>
+
+        <h3>Step 2: Create a Password</h3>
+        <div class="phone-container" style="margin-top: 10px;">
+            <input type="password" name="password" placeholder="Choose a secure password" required 
+                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+        </div>
+
+        <h3>Step 3: What are we breaking?</h3>
+        <div class="habit-options">
+    <label class="radio-card">
+        <input type="radio" name="habit_choice" value="ENDLESS SCROLLING" checked>
+        <span> Endless Scrolling</span>
+    </label>
+    <label class="radio-card">
+        <input type="radio" name="habit_choice" value="PROCRASTINATION">
+        <span> Procrastination</span>
+    </label>
+    <label class="radio-card">
+        <input type="radio" name="habit_choice" value="LATE NIGHT EATING">
+        <span> Late Night Eating</span>
+    </label>
+    <label class="radio-card">
+        <input type="radio" name="habit_choice" value="IMPULSE BUYING">
+        <span> Impulse Buying</span>
+    </label>
+    <label class="radio-card">
+        <input type="radio" name="habit_choice" value="GAMBLING">
+        <span> Gambling</span>
+    </label>
+    <label class="radio-card">
+        <input type="radio" name="habit_choice" value="WEED SOBER">
+        <span> Weed Sober</span>
+    </label>
+    <label class="radio-card">
+        <input type="radio" name="habit_choice" value="ALCOHOL SOBER">
+        <span> Alcohol Sober</span>
+    </label>
+    <label class="radio-card">
+        <input type="radio" name="habit_choice" value="custom">
+        <span> Something else...</span>
+    </label>
+    
+    <input type="text" id="custom_habit" name="custom_habit" placeholder="Enter custom habit name..." 
+           style="display: none; margin-top: 10px; width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+</div>
+
+        <button type="submit" id="submit-btn" style="margin-top: 20px; position: relative;">
+    <span id="btn-text">Start Tracking →</span>
+    <div id="spinner" class="spinner" style="display: none;"></div>
+</button>
+    </form>
+</div>
+
+    <script>
+        const radios = document.querySelectorAll('input[name="habit_choice"]');
+        const customInput = document.getElementById('custom_habit');
+        
+        radios.forEach(r => {
+            r.addEventListener('change', (e) => {
+                if(e.target.value === 'custom') {
+                    customInput.style.display = 'block';
+                    customInput.required = true;
+                    customInput.focus();
+                } else {
+                    customInput.style.display = 'none';
+                    customInput.required = false;
+                }
+            });
+        });
+
+        setTimeout(function() {
+    let messages = document.querySelectorAll('.alert');
+    messages.forEach(function(msg) {
+        msg.style.transition = "opacity 0.5s ease";
+        msg.style.opacity = "0";
+        setTimeout(() => msg.remove(), 500);
+    });
+}, 5000);
+    </script>
+
+</body>
+</html>
