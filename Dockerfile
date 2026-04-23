@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-# Install system dependencies for PostgreSQL and health checks
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
@@ -17,12 +17,16 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+
 COPY . /app/
 
-# Create a non-privileged user for security (Senior Dev move)
-RUN adduser --disabled-password --gecos "" appuser
+
+RUN adduser --disabled-password --gecos "" appuser && \
+    chown -R appuser:appuser /app
+
+
 USER appuser
 
-# Render will override the PORT env var, but 10000 is the default
+
+# Gunicorn setup
 CMD ["gunicorn", "turf_project.wsgi:application", "--bind", "0.0.0.0:10000"]

@@ -1,0 +1,15 @@
+name: Scheduled Habit Nudges
+
+on:
+  schedule:
+    # Runs at 8am, 2pm, and 8pm UTC (approx 9am, 3pm, 9pm Lagos time)
+    - cron: '0 7,13,19 * * *'
+  workflow_dispatch: # Allows you to click a button in GitHub to test it
+
+jobs:
+  trigger_nudge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hit Maintenance URL
+        run: |
+          curl -X GET "https://your-app-name.onrender.com/maintenance_trigger/?key=${{ secrets.MAINTENANCE_KEY }}"
