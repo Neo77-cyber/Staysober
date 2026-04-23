@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-# Set environment variables
+
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
@@ -28,5 +28,5 @@ RUN adduser --disabled-password --gecos "" appuser && \
 USER appuser
 
 
-# Gunicorn setup
-CMD ["gunicorn", "turf_project.wsgi:application", "--bind", "0.0.0.0:10000"]
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:10000"]
