@@ -12,5 +12,5 @@ urlpatterns = [
     path('habit/add/', views.add_habit, name='add_habit'),
     path("habits/<int:habit_id>/mark-done/", views.mark_habit_done, name="mark_habit_done"),
     path("banned/",                   views.banned_view,     name="banned"),
-    path('maintenance/daily-check/', views.maintenance_trigger, name='maintenance_check'),
+    path('maintenance_trigger/', views.maintenance_trigger, name='maintenance_check'),
 ]
