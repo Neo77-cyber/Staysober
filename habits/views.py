@@ -365,12 +365,14 @@ def maintenance_trigger(request):
     
     
     
-    if 7 <= hour <= 10:
+    if 5 <= hour <= 11:
         task_type = "MORNING GINGER"
-    elif 13 <= hour <= 16:
+    elif 12 <= hour <= 17:
         task_type = "AFTERNOON PUSH"
-    else:
+    elif 18 <= hour <= 23:
         task_type = "NIGHT WATCH"
+    else:
+        task_type = "DAILY CHECK-IN" 
 
     
     active_habits = Habit.objects.filter(user__is_active=True)
