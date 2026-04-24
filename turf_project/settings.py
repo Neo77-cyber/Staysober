@@ -21,14 +21,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 env = environ.Env(
-    DEBUG=(bool, False)
+    DEBUG=(bool, False),
+    SECRET_KEY=(str, 'placeholder-for-build-only'),
+    DATABASE_URL=(str, 'sqlite:///db.sqlite3'),
+    GREEN_API_ID_INSTANCE=(str, ''),
+    GREEN_API_TOKEN=(str, ''),
+    GEMINI_API_KEY=(str, ''),
+    MAINTENANCE_KEY=(str, '')
 )
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 
-SECRET_KEY = env('SECRET_KEY', default='django-insecure-build-placeholder')
+SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
