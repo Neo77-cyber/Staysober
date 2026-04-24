@@ -2,7 +2,6 @@ name: Scheduled Habit Nudges
 
 on:
   schedule:
-    # Runs at 8am, 2pm, and 8pm UTC (approx 9am, 3pm, 9pm Lagos time)
     - cron: '0 7,13,19 * * *'
   workflow_dispatch: 
 

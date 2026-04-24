@@ -30,4 +30,5 @@ RUN adduser --disabled-password --gecos "" appuser && \
 USER appuser
 
 
-CMD ["gunicorn", "turf_project.wsgi:application", "--bind", "0.0.0.0:10000"]
+
+CMD ["gunicorn", "turf_project.wsgi:application", "--bind", "0.0.0.0:10000", "--log-level", "debug"]
