@@ -14,13 +14,14 @@ from django.views.decorators.http import require_POST
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.core import is_ratelimited
 from typing import Union
-from .whatsapp import validate_and_send_welcome
 from django.http import HttpResponse,  HttpResponseForbidden
 from .ai_service import generate_habit_nudge
 from .whatsapp import send_whatsapp_message 
 from django.conf import settings
 from .otp import generate_otp, send_otp, store_otp, verify_otp as verify_otp_code, clear_otp
-from .models import Habit, Profile, DailyRecord
+from .models import Habit, Profile
+import time
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -252,7 +253,7 @@ def habit_list(request):
     yesterday = today - timezone.timedelta(days=1)
     for habit in habits:
         if habit.last_marked_date and habit.last_marked_date < yesterday:
-            result = habit.record_miss()
+            
             if result["status"] == "banned":
                 logout(request)
                 return redirect("banned")
@@ -359,52 +360,132 @@ def maintenance_trigger(request):
     if key != settings.MAINTENANCE_KEY:
         return HttpResponseForbidden("Nice try!")
 
-    
+    task = request.GET.get('task', 'send_nudges')  
+
     now = timezone.localtime()
-    hour = now.hour
-    
-    
-    
-    if 5 <= hour <= 11:
-        task_type = "MORNING GINGER"
-    elif 12 <= hour <= 17:
-        task_type = "AFTERNOON PUSH"
-    elif 18 <= hour <= 23:
-        task_type = "NIGHT WATCH"
-    else:
-        task_type = "DAILY CHECK-IN" 
 
     
-    active_habits = Habit.objects.filter(user__is_active=True)
-    
-    for habit in active_habits:
+    if task == 'generate_nudges':
+        habits = list(
+            Habit.objects
+            .filter(user__is_active=True)
+            .select_related('user__profile')
+        )
+        success = 0
+        failed = 0
+        for i, habit in enumerate(habits):
+            try:
+                nudge = generate_habit_nudge(
+                    habit.name,
+                    habit.current_streak,
+                    habit.missed_count,
+                )
+                habit.cached_nudge = nudge
+                habit.nudge_generated_at = now
+                habit.save(update_fields=["cached_nudge", "nudge_generated_at"])
+                success += 1
+                logger.info("Nudge cached for habit %s: %s", habit.id, nudge)
+            except Exception as e:
+                failed += 1
+                logger.error("Nudge generation failed for habit %s: %s", habit.id, e)
+
+            
+            if i < len(habits) - 1:
+                time.sleep(4.5)
+
+        return HttpResponse(f"Generated {success}/{len(habits)} nudges. {failed} failed.")
+
+
+    if task == 'send_nudges':
+        hour = now.hour
+        if 5 <= hour <= 11:
+            task_type = "MORNING GINGER"
+        elif 12 <= hour <= 17:
+            task_type = "AFTERNOON PUSH"
+        else:
+            task_type = "DAILY CHECK-IN"
+
+        active_habits = list(
+            Habit.objects
+            .filter(user__is_active=True)
+            .select_related('user__profile')
+        )
+
+        user_habits = defaultdict(list)
+        for habit in active_habits:
+            user_habits[habit.user].append(habit)
+
+        sent = 0
+        for user, habits in user_habits.items():
+            try:
+                habit_blocks = []
+                for habit in habits:
+                    
+                    nudge = habit.cached_nudge or "No allow your fire go out. Stay focused."
+                    habit_blocks.append(
+                        f"*{habit.name}*\n"
+                        f"Streak: {habit.current_streak} days | Misses: {habit.missed_count}/3\n"
+                        f"{nudge}"
+                    )
+
+                wa_message = f"*{task_type}*\n\n" + "\n\n".join(habit_blocks)
+                send_whatsapp_message(user.profile.phone_number, wa_message)
+                sent += 1
+            except Exception as e:
+                logger.error("Send failed for user %s: %s", user.username, e)
+
+        return HttpResponse(f"Sent to {sent}/{len(user_habits)} users.")
+    if task == 'night_watch':
+        today = now.date()
+        yesterday = today - timezone.timedelta(days=1)
+
         
-        if task_type == "NIGHT WATCH":
-            today = now.date()
-            yesterday = today - timezone.timedelta(days=1)
-            
-            if habit.last_marked_date and habit.last_marked_date < yesterday:
-                habit.record_miss()
+        stale_habits = list(
+            Habit.objects
+            .filter(user__is_active=True, last_marked_date__lt=yesterday)
+            .exclude(last_marked_date=None)
+            .select_related('user__profile')
+        )
+
+        banned_count = 0
+        for habit in stale_habits:
+            result = habit.record_miss()
+            if result["status"] == "banned":
+                banned_count += 1
+                logger.warning("User %s banned after 3 misses.", habit.user.username)
 
         
-        try:
-            nudge_text = generate_habit_nudge(
-                habit.name, 
-                habit.current_streak, 
-                habit.missed_count
-            )
-            
-            
-            wa_message = (
-                f"*{task_type}*\n"
-                f"Habit: {habit.name}\n"
-                f"Streak: {habit.current_streak} days\n"
-                f"Status: {habit.missed_count}/3 misses used\n\n"
-                f"{nudge_text}"
-            )
-            
-            send_whatsapp_message(habit.user.profile.phone_number, wa_message)
-        except Exception as e:
-            logger.error(f"AI Nudge failed for {habit.user.username}: {e}")
+        active_habits = list(
+            Habit.objects
+            .filter(user__is_active=True)
+            .select_related('user__profile')
+        )
 
-    return HttpResponse(f"Processed {active_habits.count()} habits.")
+        user_habits = defaultdict(list)
+        for habit in active_habits:
+            user_habits[habit.user].append(habit)
+
+        sent = 0
+        for user, habits in user_habits.items():
+            try:
+                habit_blocks = []
+                for habit in habits:
+                    nudge = habit.cached_nudge or "No allow your fire go out. Stay focused."
+                    habit_blocks.append(
+                        f"*{habit.name}*\n"
+                        f"Streak: {habit.current_streak} days | Misses: {habit.missed_count}/3\n"
+                        f"{nudge}"
+                    )
+
+                wa_message = "*NIGHT WATCH*\n\n" + "\n\n".join(habit_blocks)
+                send_whatsapp_message(user.profile.phone_number, wa_message)
+                sent += 1
+            except Exception as e:
+                logger.error("Night send failed for user %s: %s", user.username, e)
+
+        return HttpResponse(
+            f"Night watch done. {len(stale_habits)} misses recorded. "
+            f"{banned_count} banned. {sent}/{len(user_habits)} messages sent."
+        )
+
+    return HttpResponseForbidden(f"Unknown task: {task}")

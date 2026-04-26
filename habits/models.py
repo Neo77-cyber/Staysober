@@ -44,11 +44,13 @@ class Habit(models.Model):
     goal = models.CharField(max_length=255, default="Daily")
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # --- Streak tracking ---
+    
     current_streak = models.PositiveIntegerField(default=0)
     longest_streak = models.PositiveIntegerField(default=0)
-    missed_count = models.PositiveIntegerField(default=0)   # lifetime misses (max 3)
+    missed_count = models.PositiveIntegerField(default=0)   
     last_marked_date = models.DateField(null=True, blank=True)
+    cached_nudge = models.TextField(null=True, blank=True)
+    nudge_generated_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"

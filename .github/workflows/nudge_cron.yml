@@ -1,14 +1,100 @@
-name: Scheduled Habit Nudges
+# .github/workflows/scheduled_jobs.yml
+# Place this file at exactly that path in your repo root
+
+name: Scheduled Habit Jobs
 
 on:
   schedule:
-    - cron: '0 7,13,19 * * *'
-  workflow_dispatch: 
+    # Generate nudges — 4 AM WAT (3 AM UTC), runs slowly to respect free tier
+    - cron: '0 3 * * *'
+    # Generate nudges again midday — 2 PM WAT (1 PM UTC)
+    - cron: '0 13 * * *'
+
+    # Send morning reminder — 7 AM WAT (6 AM UTC)
+    - cron: '0 6 * * *'
+    # Send afternoon reminder — 2 PM WAT (1 PM UTC)
+    - cron: '0 13 * * *'
+    # Send night watch — 9 PM WAT (8 PM UTC)
+    - cron: '0 20 * * *'
+
+  # Allow manual trigger from GitHub Actions tab for testing
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Which job to run'
+        required: true
+        type: choice
+        options:
+          - generate_nudges
+          - morning_reminder
+          - afternoon_reminder
+          - night_watch
 
 jobs:
-  trigger_nudge:
+
+  # ----------------------------------------------------------------
+  # Generate nudges — hits Gemini API slowly, stores in DB
+  # Runs at 3 AM and 1 PM UTC
+  # ----------------------------------------------------------------
+  generate-nudges:
+    name: Generate AI Nudges
     runs-on: ubuntu-latest
+    # Only run on the nudge-generation schedules OR manual trigger
+    if: |
+      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'generate_nudges' ||
+      github.event.schedule == '0 3 * * *' ||
+      github.event.schedule == '0 13 * * *'
+
     steps:
-      - name: Hit Maintenance URL
+      - name: Call generate_nudges endpoint
         run: |
-          curl -X GET "https://staysober-56ns.onrender.com/maintenance_trigger/?key=${{ secrets.MAINTENANCE_KEY }}"
+          curl --fail --silent --show-error \
+            "${{ secrets.APP_URL }}/maintenance_trigger/?key=${{ secrets.MAINTENANCE_KEY }}&task=generate_nudges"
+
+  # ----------------------------------------------------------------
+  # Morning reminder — 7 AM WAT
+  # ----------------------------------------------------------------
+  morning-reminder:
+    name: Morning Reminder
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'morning_reminder' ||
+      github.event.schedule == '0 6 * * *'
+
+    steps:
+      - name: Trigger morning nudge
+        run: |
+          curl --fail --silent --show-error \
+            "${{ secrets.APP_URL }}/maintenance_trigger/?key=${{ secrets.MAINTENANCE_KEY }}&task=send_nudges"
+
+  # ----------------------------------------------------------------
+  # Afternoon reminder — 2 PM WAT
+  # ----------------------------------------------------------------
+  afternoon-reminder:
+    name: Afternoon Reminder
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'afternoon_reminder' ||
+      github.event.schedule == '0 13 * * *'
+
+    steps:
+      - name: Trigger afternoon nudge
+        run: |
+          curl --fail --silent --show-error \
+            "${{ secrets.APP_URL }}/maintenance_trigger/?key=${{ secrets.MAINTENANCE_KEY }}&task=send_nudges"
+
+  # ----------------------------------------------------------------
+  # Night watch — 9 PM WAT (also records misses)
+  # ----------------------------------------------------------------
+  night-watch:
+    name: Night Watch
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'night_watch' ||
+      github.event.schedule == '0 20 * * *'
+
+    steps:
+      - name: Trigger night watch
+        run: |
+          curl --fail --silent --show-error \
+            "${{ secrets.APP_URL }}/maintenance_trigger/?key=${{ secrets.MAINTENANCE_KEY }}&task=night_watch"
