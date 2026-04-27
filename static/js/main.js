@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectedRadio.value = 'custom';
             }
 
+            if (this.hasAttribute('hx-post') || this.hasAttribute('hx-get')) return;
             
             const submitBtn = this.querySelector('button[type="submit"]');
             if (submitBtn) {
@@ -128,6 +129,11 @@ function markDone(card) {
             }
 
             showCelebration(data.current_streak);
+
+            const totalStreakEl = document.getElementById('totalStreak');
+                if (totalStreakEl && data.total_streak !== undefined) {
+                    totalStreakEl.textContent = data.total_streak;
+                }
 
         } else if (data.status === 'banned') {
             window.location.href = '/banned/';

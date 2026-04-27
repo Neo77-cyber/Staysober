@@ -28,14 +28,15 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class Habit(models.Model):
     HABIT_CHOICES = [
-        ('ENDLESS SCROLLING', 'Endless Scrolling'),
-        ('PROCRASTINATION', 'Procrastination'),
-        ('LATE NIGHT EATING', 'Late Night Eating'),
-        ('IMPULSE BUYING', 'Impulse Buying'),
-        ('GAMBLING', 'Gambling'),
-        ('WEED SOBER', 'Weed Sober'),
-        ('ALCOHOL SOBER', 'Alcohol Sober'),
-        ('CUSTOM', 'Custom Habit'),
+    ('DAILY PRAYERS', 'Daily Prayers'),
+    ('WORK OUT', 'Work Out'),
+    ('EXAM PREPARATION', 'Exam Preparation'),
+    ('GAMBLING', 'Gambling'),
+    ('WEED SOBER', 'Weed Sober'),
+    ('LATE NIGHT EATING', 'Late Night Eating'),
+    ('BUY BUY', 'Buy Buy'),
+    ('ALCOHOL SOBER', 'Alcohol Sober'),
+    ('CUSTOM', 'Custom Habit'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="habits")

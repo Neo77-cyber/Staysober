@@ -125,12 +125,13 @@
                     <select name="habit_choice"
                             onchange="document.getElementById('custom-input').style.display = (this.value === 'custom' ? 'block' : 'none')"
                             class="bg-black/40 border border-white/10 p-4 rounded-xl flex-grow outline-none focus:border-violet-600 transition">
-                        <option value="ENDLESS SCROLLING">Endless Scrolling</option>
-                        <option value="PROCRASTINATION">Procrastination</option>
-                        <option value="LATE NIGHT EATING">Late Night Eating</option>
-                        <option value="IMPULSE BUYING">Impulse Buying</option>
+                        <option value="DAILY PRAYERS & BIBLE STUDY">Daily Prayers</option>
+                        <option value="WORK OUT">Work Out</option>
+                        <option value="EXAM PREPARATION">Exam Preparation</option>
                         <option value="GAMBLING">Gambling</option>
                         <option value="WEED SOBER">Weed Sober</option>
+                        <option value="LATE NIGHT EATING">Late Night Eating</option>
+                        <option value="BUY BUY">Buy Buy</option>
                         <option value="ALCOHOL SOBER">Alcohol Sober</option>
                         <option value="custom">-- Something else --</option>
                     </select>
@@ -166,9 +167,10 @@
 
     <div id="celebrationOverlay" class="celebration-overlay hidden">
         <div class="celebration-box">
-            <div style="font-size: 4rem; margin-bottom: 1rem;" id="celebEmoji">🎉</div>
+            <div style="font-size: 4rem; margin-bottom: 1rem;" id="celebEmoji"></div>
             <h2 class="text-2xl font-bold" id="celebTitle">Level Up!</h2>
             <p class="text-gray-400 mt-2" id="celebMsg"></p>
+            <p class="text-gray-400 mt-2" >If you like don't do it, It's not me you're doing it's your future self</p>
             <button onclick="document.getElementById('celebrationOverlay').classList.add('hidden')" 
                     class="w-full bg-violet-600 py-4 rounded-xl font-bold mt-6">Let's Go!</button>
         </div>

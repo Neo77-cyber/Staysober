@@ -85,7 +85,7 @@ def index(request):
     raw_phone = request.POST.get("identifier", "").strip()
     clean_number = clean_phone_number(raw_phone)
     if not clean_number:
-        messages.error(request, "Invalid number. Please remove the '0' before your phone number (e.g., 8123 instead of 0812).")
+        messages.error(request, "Phone number is invalid. Please remove the '0' before your phone number (e.g., 8123 instead of 0812).")
         return render(request, "habits/index.html")
 
     if is_ratelimited(request, group="register_phone", key=lambda g, r: clean_number,
@@ -290,6 +290,11 @@ def mark_habit_done(request, habit_id):
         return JsonResponse({"status": "not_found"}, status=404)
 
     result = habit.mark_done()
+
+    total_streak = sum(
+        h.current_streak for h in Habit.objects.filter(user=request.user)
+    )
+    result["total_streak"] = total_streak
     return JsonResponse(result)
 
 
@@ -396,7 +401,6 @@ def maintenance_trigger(request):
                 failed += 1
                 logger.error("Nudge generation failed for habit %s: %s", habit.id, e)
 
-            
             if i < len(habits) - 1:
                 time.sleep(4.5)
 
@@ -494,5 +498,16 @@ def maintenance_trigger(request):
             f"Night watch done. {len(stale_habits)} misses recorded. "
             f"{banned_count} banned. {sent}/{len(user_habits)} messages sent."
         )
+
+    if task == 'debug_nudges':
+        habits = Habit.objects.filter(user__is_active=True).select_related('user__profile')
+        lines = []
+        for h in habits:
+            lines.append(
+                f"Habit: {h.name} | "
+                f"cached_nudge: '{h.cached_nudge}' | "
+                f"generated_at: {h.nudge_generated_at}"
+            )
+        return HttpResponse("\n".join(lines), content_type="text/plain")
 
     return HttpResponseForbidden(f"Unknown task: {task}")
