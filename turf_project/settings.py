@@ -164,6 +164,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- SECURITY & SESSIONS ---
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  
+SESSION_SAVE_EVERY_REQUEST = True 
+
 
 SESSION_COOKIE_SECURE = env('DEBUG') is False
 CSRF_COOKIE_SECURE = env('DEBUG') is False

@@ -122,6 +122,9 @@ def index(request):
         'category': category,
     }
 
+    request.session.modified = True
+    request.session.save()
+
     otp = generate_otp()
     sent = send_otp(clean_number, otp)
     if not sent:

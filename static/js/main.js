@@ -169,27 +169,27 @@ function showCelebration(streak) {
     
     if (streak >= 30) {
         emoji.textContent = '';
-        title.textContent = 'Legend Status!';
+        title.textContent = 'Legend Status';
         msg.textContent   = `30 days strong. You actually did it.`;
     } else if (streak >= 21) {
         emoji.textContent = '';
-        title.textContent = 'On Fire!';
+        title.textContent = 'On Fire';
         msg.textContent   = `${streak} days. This is a lifestyle now.`;
     } else if (streak >= 14) {
         emoji.textContent = '';
-        title.textContent = 'Two Weeks Deep!';
+        title.textContent = 'Two Weeks Deep';
         msg.textContent   = `${streak} days straight. No weak links.`;
     } else if (streak >= 7) {
         emoji.textContent = '';
-        title.textContent = 'One Week Done!';
+        title.textContent = 'One Week Done';
         msg.textContent   = `${streak} days. The habit is forming.`;
     } else if (streak === 1) {
         emoji.textContent = '';
-        title.textContent = 'Day One Done!';
+        title.textContent = 'Day One Done';
         msg.textContent   = `Every legend starts somewhere. Let's go.`;
     } else {
         emoji.textContent = '';
-        title.textContent = `Day ${streak}!`;
+        title.textContent = `Day ${streak}`;
         msg.textContent   = `Keep the streak alive. Don't stop now.`;
     }
 

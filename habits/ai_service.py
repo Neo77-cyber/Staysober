@@ -47,14 +47,14 @@ def _mark_model_exhausted(model: str):
 
 
 def _call_gemini(url: str, payload: dict) -> dict:
-    """Raw API call. Raises on non-2xx. No retry logic — caller handles fallback."""
+    
     response = requests.post(url, json=payload, timeout=15)
     response.raise_for_status()
     return response.json()
 
 
 def _extract_text(data: dict) -> Optional[str]:
-    """Safely pull text out of Gemini response structure."""
+    
     try:
         return data['candidates'][0]['content']['parts'][0]['text'].strip()
     except (KeyError, IndexError, TypeError):
