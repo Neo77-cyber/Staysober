@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
     setTimeout(() => {
-        document.querySelectorAll('.alert-msg, .alert').forEach(msg => {
+        document.querySelectorAll('.alert-msg, .alert, .django-message').forEach(msg => {
             msg.style.transition = 'opacity 0.5s ease';
             msg.style.opacity = '0';
             setTimeout(() => msg.remove(), 500);

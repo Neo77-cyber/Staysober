@@ -44,14 +44,19 @@
         <div class="form-container p-8 md:p-12 w-full max-w-xl mx-auto shadow-2xl">
             <div class="lg:hidden text-center mb-10 border-b border-white/5 pb-8">
                 <h1 class="text-4xl font-extrabold tracking-tighter mb-3 text-white">Small steps,<br><span class="text-violet-500">Big Wins.</span></h1>
-                <p class="text-gray-400 text-sm font-medium leading-relaxed max-w-[280px] mx-auto">
-                    Track habits and stay accountable via WhatsApp reminders.
-                </p>
+                <p>Track your habits and stay accountable via WhatsApp reminders.</p>
+                
             </div>
 
             <h2 class="text-2xl font-bold mb-1 tracking-tight text-white">Create account</h2>
             <p class="text-gray-500 text-sm mb-8">Verification code will be sent to WhatsApp.</p>
-
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert p-4 rounded-xl mb-4 {% if message.tags == 'error' %}bg-red-500/10 text-red-500{% else %}bg-violet-500/10 text-violet-500{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
             <form method="POST" class="space-y-6">
                 {% csrf_token %}
                 

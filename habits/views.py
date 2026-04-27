@@ -31,10 +31,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def clean_phone_number(raw_phone: str) -> Union[str, None]:
-    """
-    Parse and normalise a Nigerian phone number to E.164 without the '+'.
-    Returns None if the number is invalid.
-    """
+    
     try:
         parsed = phonenumbers.parse(raw_phone, "NG")
         if phonenumbers.is_valid_number(parsed):
@@ -64,7 +61,7 @@ def _parse_habit(post_data: dict) -> Union[tuple[str, str], tuple[None, None]]:
 
 
 def banned_check(user) -> bool:
-    """Returns True if the user has been deactivated (banned)."""
+   
     return not user.is_active
 
 
@@ -88,7 +85,7 @@ def index(request):
     raw_phone = request.POST.get("identifier", "").strip()
     clean_number = clean_phone_number(raw_phone)
     if not clean_number:
-        messages.error(request, "That phone number is not valid. Please check and try again.")
+        messages.error(request, "Invalid number. Please remove the '0' before your phone number (e.g., 8123 instead of 0812).")
         return render(request, "habits/index.html")
 
     if is_ratelimited(request, group="register_phone", key=lambda g, r: clean_number,
