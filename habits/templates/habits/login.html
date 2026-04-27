@@ -1,183 +1,89 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turf | Log In</title>
+    <title>HabitTracker | Welcome Back</title>
+    <link rel="icon" type="image/png" href="{% static 'logo.png' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #00ff88;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f8fafc;
-            --error: #ff4d4d;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .hero {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        h1 {
-            color: var(--primary);
-            font-size: 2.5rem;
-            margin-bottom: 0;
-            letter-spacing: -1px;
-        }
-
-        p.subtitle {
-            color: #94a3b8;
-            margin-bottom: 30px;
-        }
-
-        .phone-container {
-            position: relative;
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .phone-container h3 {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .input-group {
-            display: flex;
-            align-items: center;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
+        body { 
+            background-color: #000000; 
+            font-family: 'Inter', sans-serif; 
+            color: white; 
             overflow: hidden;
-            transition: border-color 0.3s;
         }
 
-        .input-group:focus-within {
-            border-color: var(--primary);
+        .hero-bg {
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.25) 0%, rgba(0, 0, 0, 1) 70%),
+                url('https://images.unsplash.com/photo-1464802686167-b939a6910659?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover; 
+            background-position: center;
         }
 
-        .prefix {
-            padding: 12px;
-            background: #334155;
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: #0f172a;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        .alert {
-            background: var(--error);
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.85rem;
-            text-align: left;
-            border-left: 4px solid #b30000;
-        }
-
-        .footer-links {
-            margin-top: 25px;
-            font-size: 0.85rem;
-            color: #94a3b8;
-        }
-
-        .footer-links a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .footer-links a:hover {
-            text-decoration: underline;
+        .form-container {
+            background: rgba(12, 12, 12, 0.7); 
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 28px;
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen hero-bg flex flex-col items-center justify-center p-6">
 
-    <div class="hero">
-        <h1>TURF</h1>
-        <p class="subtitle">Welcome back, Champ. Sign in to check your streaks.</p>
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        <form method="POST">
-            {% csrf_token %}
-
-            <div class="phone-container">
-                <h3>WhatsApp Number</h3>
-                <div class="input-group">
-                    <span class="prefix">+234</span>
-                    <input type="text" name="identifier" placeholder="8123456789" required 
-                           pattern="[0-9]{10}" maxlength="10">
-                </div>
-            </div>
-
-            <div class="phone-container">
-                <h3>Password</h3>
-                <div class="input-group">
-                    <input type="password" name="password" placeholder="••••••••" required>
-                </div>
-            </div>
-
-            <button type="submit">Unlock Dashboard →</button>
-        </form>
-
-        <div class="footer-links">
-            Don't have a habit yet? <a href="{% url 'index' %}">Start here</a>
+    <div class="mb-10 flex flex-col items-center gap-3">
+        <div class="p-1.5 mix-blend-lighten">
+            <img src="{% static 'logo.png' %}" alt="Logo" class="w-12 h-12 object-contain">
         </div>
+        <span class="font-extrabold tracking-tighter text-2xl">HabitTracker</span>
+    </div>
+
+    <div class="form-container p-8 md:p-12 w-full max-w-md border border-white/5 shadow-2xl">
+        <div class="text-center mb-10">
+            <h2 class="text-2xl font-bold tracking-tight">Welcome back</h2>
+            <p class="text-gray-500 text-sm mt-2">Log in to manage your WhatsApp nudges.</p>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if messages %}
+                <div class="space-y-3">
+                    {% for message in messages %}
+                        <div class="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl text-xs font-bold uppercase tracking-wider">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div>
+                <label class="text-[11px] font-bold text-gray-600 uppercase mb-2.5 block tracking-widest">WhatsApp Number</label>
+                <div class="flex items-center bg-black/60 border border-white/10 rounded-xl focus-within:border-violet-600 transition">
+                    <span class="px-5 text-gray-500 font-bold border-r border-white/5 text-sm">+234</span>
+                    <input type="text" name="identifier" class="bg-transparent w-full p-4 outline-none text-white text-sm" placeholder="8123456789" required>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-2.5">
+                    <label class="text-[11px] font-bold text-gray-600 uppercase block tracking-widest">Password</label>
+                    <a href="#" class="text-[10px] font-bold text-violet-500 uppercase tracking-widest hover:text-violet-400">Forgot?</a>
+                </div>
+                <input type="password" name="password" class="bg-black/60 border border-white/10 rounded-xl w-full p-4 outline-none focus:border-violet-600 transition text-sm" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="w-full bg-violet-600 hover:bg-violet-700 py-4.5 rounded-xl font-bold transition shadow-lg shadow-violet-950/20 text-sm uppercase tracking-widest">
+                Log In
+            </button>
+        </form>
+        
+        <p class="text-center text-sm text-gray-600 mt-10 font-medium">
+            New here? <a href="{% url 'index' %}" class="text-violet-400 font-bold hover:text-violet-300">Create an account</a>
+        </p>
     </div>
 
 </body>

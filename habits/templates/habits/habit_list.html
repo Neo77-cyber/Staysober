@@ -1,252 +1,119 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stay Sober | My Habits</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>HabitTracker | Dashboard</title>
+    <link rel="icon" type="image/png" href="{% static 'logo.png' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --primary: #22c55e;
-            --primary-dark: #16a34a;
-            --bg: #f8fafc;
-            --text-main: #111827;
-            --text-muted: #6b7280;
-            --danger: #dc2626;
-            --warning: #d97706;
+        body { background-color: #000; font-family: 'Inter', sans-serif; color: white; }
+        .glass-card {
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
         }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
-
-        .dashboard { max-width: 480px; margin: 0 auto; padding: 2rem 1.25rem; }
-        
-        .dashboard-header { margin-bottom: 2rem; }
-        .dashboard-header h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0; }
-        .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem; }
-
-        .habit-list { display: flex; flex-direction: column; gap: 1.25rem; }
-
-        .habit-card {
-            position: relative;
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            cursor: grab;
-            user-select: none;
-            touch-action: pan-y;
-            border: 1px solid #e5e7eb;
-            cursor: default; 
-        }
-
-        .habit-card.done { 
-            background: #f0fdf4; 
-            border: 1.5px solid var(--primary); 
-            box-shadow: none;
-        }
-
-        .swipe-hint {
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 0;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            display: flex; align-items: center;
-            color: white; font-weight: 700; font-size: 1.1rem;
-            padding-left: 1.5rem;
-            z-index: 0;
-            opacity: 0;
-        }
-
-        .habit-body {
-            position: relative;
-            z-index: 1;
-            padding: 1.25rem;
-            background: transparent;
-        }
-
-        .habit-name { display: block; font-size: 1.1rem; font-weight: 700; margin-bottom: 2px; }
-        .habit-category { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-
-        .streak-info { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; }
-        .streak-number { font-size: 1.5rem; font-weight: 800; color: #f97316; }
-        .streak-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
-        
-        .miss-count { font-size: 0.8rem; padding: 4px 8px; border-radius: 6px; background: #f3f4f6; color: var(--text-muted); }
-        .miss-count.warn { color: var(--warning); background: #fffbeb; }
-        .miss-count.danger { color: var(--danger); background: #fef2f2; animation: pulse 1.5s infinite; }
-
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        .done-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem; color: var(--primary-dark); font-weight: 700; }
-        .pending-badge { font-size: 0.85rem; color: #9ca3af; font-weight: 500; }
-
-        /* Celebration Modal */
+        /* Celebration Modal Styling */
         .celebration-overlay {
             position: fixed; inset: 0;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
             display: flex; align-items: center; justify-content: center;
             z-index: 1000;
         }
         .celebration-overlay.hidden { display: none; }
-
         .celebration-box {
-            background: #fff;
-            border-radius: 28px;
-            padding: 2.5rem 1.5rem;
+            background: #111;
+            border: 1px solid #7c3aed;
+            border-radius: 32px;
+            padding: 3rem 2rem;
             max-width: 340px;
             width: 90%;
             text-align: center;
+            box-shadow: 0 0 40px rgba(124, 58, 237, 0.2);
         }
-        
-        .honesty-line {
-            font-size: 0.8rem;
-            color: #9ca3af;
-            font-style: italic;
-            border-top: 1px solid #f3f4f6;
-            margin-top: 1.5rem;
-            padding-top: 1rem;
-        }
-        
-
-.clock-in-btn {
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 0.5rem 1.25rem;
-    background: transparent;
-    border: 2px solid var(--primary);
-    color: var(--primary-dark);
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    font-family: inherit;
-}
-
-.clock-in-btn:active {
-    background: var(--primary);
-    color: white;
-}
-
-        .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        .logout-btn { width: 100%; margin-top: 3rem; padding: 0.75rem; background: white; border: 1px solid #e5e7eb; border-radius: 12px; color: #9ca3af; font-weight: 600; cursor: pointer; }
     </style>
 </head>
-<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<body class="min-h-screen pb-32" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
-<div class="dashboard">
-    <div class="dashboard-header">
-        <h1>Stay Sober</h1>
-        <p class="subtitle">Don't let the fire go out. Swipe right to clock in.</p>
+    <nav class="p-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="mix-blend-lighten">
+                <img src="{% static 'logo.png' %}" class="w-8 h-8 object-contain">
+            </div>
+            <span class="font-extrabold tracking-tighter text-xl">HabitTracker</span>
+        </div>
+    </nav>
+
+    <main class="max-w-md mx-auto px-6">
+        <header class="mb-8">
+            <h1 class="text-3xl font-extrabold tracking-tight">Good morning, Daniel 👋</h1>
+            <p class="text-gray-500 text-sm mt-1">Don't let the fire go out.</p>
+        </header>
+
+        <div class="space-y-4" id="habitList">
+            {% for habit in habits %}
+                <div class="habit-card glass-card p-5 flex items-center justify-between {% if habit.is_done_today %}border-violet-500/50 bg-violet-500/5{% endif %}">
+                    <div>
+                        <h3 class="font-bold text-lg">{{ habit.get_habit_choice_display }}</h3>
+                        <p class="text-xs text-gray-500 mt-1 uppercase font-bold tracking-widest">
+                            Streak: <span class="text-orange-500">{{ habit.streak }}🔥</span>
+                        </p>
+                    </div>
+
+                    {% if not habit.is_done_today %}
+                    <button hx-post="{% url 'clock_in' habit.id %}" 
+                            hx-target="body" 
+                            hx-swap="beforeend"
+                            class="bg-violet-600 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-violet-900/20">
+                        Clock In
+                    </button>
+                    {% else %}
+                    <div class="bg-violet-500/20 p-2 rounded-full text-violet-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-12">
+            <h2 class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] mb-4">Add New Habit</h2>
+            <div class="glass-card p-6">
+                <form hx-post="{% url 'add_habit' %}" hx-target="#habitList" hx-swap="beforeend">
+                    {% csrf_token %}
+                    <select name="habit_choice" class="w-full bg-black border border-white/10 rounded-xl p-4 text-sm text-white mb-4 outline-none focus:border-violet-600">
+                        <option value="ENDLESS SCROLLING">Endless Scrolling</option>
+                        <option value="PROCRASTINATION">Procrastination</option>
+                        <option value="LATE NIGHT EATING">Late Night Eating</option>
+                        <option value="WEED SOBER">Weed Sober</option>
+                        <option value="ALCOHOL SOBER">Alcohol Sober</option>
+                    </select>
+                    <button type="submit" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase tracking-widest text-xs">
+                        Add Habit
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="celebrationOverlay" class="celebration-overlay hidden">
+        <div class="celebration-box">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+            <h2 class="text-2xl font-bold">Level Up!</h2>
+            <p class="text-gray-400 text-sm mt-2">You're staying consistent. Keep going!</p>
+            <button onclick="document.getElementById('celebrationOverlay').classList.add('hidden')" 
+                    class="w-full bg-violet-600 mt-8 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs">
+                Let's Go!
+            </button>
+        </div>
     </div>
 
-    <div class="habit-list" id="habitList">
-        {% for habit in habits %}
-            {% include "habits/partials/habit_card.html" %}
-        {% endfor %}
-    </div>
-
-    <div id="add-habit-container" style="margin-top: 2rem; background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid #e5e7eb;">
-        <div id="form-error" style="color: var(--danger); font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; display: none;"></div>
-        <form hx-post="{% url 'add_habit' %}" hx-target="#habitList" hx-swap="beforeend"
-              hx-on::after-request="if(event.detail.successful) { this.reset(); document.getElementById('custom-input').style.display='none'; document.getElementById('form-error').style.display='none'; } else { document.getElementById('form-error').style.display='block'; document.getElementById('form-error').innerText = event.detail.xhr.responseText; }">
-            {% csrf_token %}
-            <select name="habit_choice" onchange="document.getElementById('custom-input').style.display = (this.value === 'CUSTOM' ? 'block' : 'none')" style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 1px solid #e5e7eb; font-weight: 600; font-family: inherit;">
-                <option value="ENDLESS SCROLLING">Endless Scrolling</option>
-                <option value="PROCRASTINATION">Procrastination</option>
-                <option value="LATE NIGHT EATING">Late Night Eating</option>
-                <option value="IMPULSE BUYING">Impulse Buying</option>
-                <option value="GAMBLING">Gambling</option>
-                <option value="WEED SOBER">Weed Sober</option>
-                <option value="ALCOHOL SOBER">Alcohol Sober</option>
-                <option value="CUSTOM">-- Custom Habit --</option>
-            </select>
-            <input type="text" name="custom_habit" id="custom-input" placeholder="What habit?" style="display:none; width: 100%; margin-top: 10px; padding: 0.75rem; border-radius: 12px; border: 1px solid #e5e7eb; font-family: inherit;">
-            <button type="submit" class="btn" style="margin-top: 1.5rem;">Add Habit</button>
-        </form>
-    </div>
-
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit" class="logout-btn">Log out</button>
-    </form>
-</div>
-
-<div id="celebrationOverlay" class="celebration-overlay hidden">
-    <div class="celebration-box">
-        <div style="font-size: 4rem; margin-bottom: 1rem;" id="celebEmoji">🎉</div>
-        <h2 id="celebTitle">Level Up!</h2>
-        <p id="celebMsg"></p>
-        <p class="honesty-line">Marking it without doing it only cheats your future self.</p>
-        <button onclick="document.getElementById('celebrationOverlay').classList.add('hidden')" class="btn" style="margin-top: 1.5rem;">Let's Go, YAMSKI!</button>
-    </div>
-</div>
-
-<script>
-    const CSRF = "{{ csrf_token }}";
-
-    function handleClockIn(btn) {
-        const card = btn.closest('.habit-card');
-        if (card.classList.contains('done')) return;
-
-        markDone(card);
-    }
-
-    function markDone(card) {
-        const habitId = card.dataset.habitId;
-
-        fetch(`/habits/${habitId}/mark-done/`, {
-            method: "POST",
-            headers: { "X-CSRFToken": CSRF, "Content-Type": "application/json" }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === "success") {
-                const streakEl = document.getElementById(`streak-${habitId}`);
-                if (streakEl) streakEl.textContent = data.current_streak;
-
-                card.classList.add('done');
-
-                
-                const btn = card.querySelector('.clock-in-btn');
-                if (btn) {
-                    const badge = document.createElement('div');
-                    badge.className = 'done-badge';
-                    badge.textContent = 'CLOCKED IN';
-                    btn.replaceWith(badge);
-                }
-
-                showCelebration(data.current_streak);
-            } else {
-                location.reload();
-            }
-        })
-        .catch(() => location.reload());
-    }
-
-    function showCelebration(streak) {
-        document.getElementById("celebEmoji").textContent = "";
-        document.getElementById("celebTitle").textContent = "Clocked in!";
-        document.getElementById("celebMsg").textContent = `${streak} day streak. Don't stop now.`;
-        document.getElementById("celebrationOverlay").classList.remove("hidden");
-    }
-
-    
-    document.body.addEventListener('htmx:afterOnLoad', (e) => {
-        
-    });
-</script>
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>

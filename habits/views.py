@@ -74,6 +74,9 @@ def banned_check(user) -> bool:
 
 
 
+
+
+
 @ratelimit(key="ip", rate="10/m", method="POST", block=True)
 def index(request):
     if request.user.is_authenticated:
