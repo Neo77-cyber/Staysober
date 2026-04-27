@@ -1,139 +1,93 @@
+/* Custom Properties */
 :root {
-    --primary-purple: #8b5cf6;
-    --dark-bg: #0b0514;
-    --card-bg: rgba(255, 255, 255, 0.05);
-    --border: rgba(255, 255, 255, 0.1);
-    --text-gray: #9ca3af;
+    --primary-violet: #7c3aed;
+    --bg-black: #000000;
 }
 
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--dark-bg);
-    color: white;
-    margin: 0;
-    min-height: 100vh;
+body { 
+    background-color: var(--bg-black); 
+    font-family: 'Inter', sans-serif; 
+    color: white; 
+    overflow-x: hidden;
 }
 
-/* Glassmorphism Cards */
-.glass-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
+.hero-bg {
+    background-image: 
+        radial-gradient(circle at 30% 50%, rgba(76, 29, 149, 0.3) 0%, rgba(0, 0, 0, 1) 65%),
+        url('https://images.unsplash.com/photo-1464802686167-b939a6910659?q=80&w=2000&auto=format&fit=crop');
+    background-size: cover; 
+    background-position: center;
+    background-attachment: fixed;
 }
 
-/* Form Styling */
-.hero {
-    max-width: 450px;
-    margin: 0 auto;
-    padding: 40px 20px;
-    text-align: center;
+.form-container {
+    background: rgba(15, 15, 15, 0.75); 
+    backdrop-filter: blur(35px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 28px;
 }
 
-h1 {
-    font-size: 3rem;
-    font-weight: 800;
-    margin-bottom: 10px;
-    line-height: 1;
+/* Habit Pill Styles */
+.habit-pill {
+    cursor: pointer;
+    transition: 0.2s all ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.01);
 }
 
-h3 {
-    color: var(--text-gray);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    text-align: left;
-    margin: 20px 0 10px 0;
-    letter-spacing: 1px;
+.habit-pill:hover {
+    background: rgba(255, 255, 255, 0.03);
 }
 
-.input-group {
+.habit-pill:has(input:checked) {
+    border-color: var(--primary-violet);
+    background: rgba(124, 58, 237, 0.1);
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.2);
+}
+
+.icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(124, 58, 237, 0.15);
     display: flex;
     align-items: center;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 0 15px;
-    margin-bottom: 15px;
-    transition: 0.3s;
-}
-
-.input-group:focus-within {
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-}
-
-.input-group input {
-    background: transparent;
-    border: none;
-    padding: 15px 5px;
-    width: 100%;
-    color: white;
-    outline: none;
-    font-size: 1rem;
-}
-
-.prefix { color: #666; font-weight: bold; margin-right: 5px; }
-
-/* Habit Radio Cards */
-.habit-options { text-align: left; }
-
-.radio-card {
-    display: flex;
-    align-items: center;
-    background: var(--card-bg);
-    padding: 14px;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    transition: 0.2s;
-}
-
-.radio-card:hover { border-color: #444; }
-
-.radio-card input:checked + span { color: var(--primary-purple); font-weight: bold; }
-.radio-card:has(input:checked) {
-    border-color: var(--primary-purple);
-    background: rgba(139, 92, 246, 0.1);
-}
-
-#custom_habit {
-    width: 100%;
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid var(--primary-purple);
-    background: #111;
-    color: white;
-    margin-top: 10px;
-}
-
-/* Primary Button */
-button#submit-btn {
-    width: 100%;
-    padding: 18px;
-    border-radius: 12px;
-    background: var(--primary-purple);
-    color: white;
-    font-weight: 800;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s;
-    margin-top: 20px;
-}
-
-button#submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .spinner {
-    width: 20px; height: 20px;
-    border: 3px solid rgba(255,255,255,0.3);
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     border-top-color: #fff;
     animation: spin 0.8s linear infinite;
-    display: none; margin: 0 auto;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}
+
+
+.progress-bg {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+
+button[hx-post] {
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 10px 0 10px 20px; 
+}
+
+.habit-card.done {
+    border-color: rgba(109, 40, 217, 0.2);
+}

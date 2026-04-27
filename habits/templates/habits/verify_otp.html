@@ -1,48 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DearSelf | Verify Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #000; font-family: 'Inter', sans-serif; color: white; }
+        .glass-card {
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 32px;
+        }
+        input::placeholder { color: rgba(255, 255, 255, 0.2); letter-spacing: normal; font-size: 1rem; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
 
-<div class="dashboard" style="max-width: 420px; margin: 0 auto; padding: 3rem 1.25rem;">
-    <h1 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;">Check WhatsApp</h1>
-    <p style="color: #6b7280; margin-bottom: 2rem;">
-        We sent a 6-digit code to your WhatsApp. Enter it below.
-    </p>
+    <div class="w-full max-w-md text-center">
+        <div class="mb-10 flex justify-center">
+            <img src="{% static 'logo.png' %}" class="w-12 h-12" alt="Logo">
+        </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div style="padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 1rem;
-                background: {% if message.tags == 'error' %}#fef2f2{% else %}#f0fdf4{% endif %};
-                color: {% if message.tags == 'error' %}#dc2626{% else %}#16a34a{% endif %};
-                font-weight: 600; font-size: 0.9rem;">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+        <h1 class="text-3xl font-extrabold tracking-tight mb-2">Check WhatsApp</h1>
+        <p class="text-gray-500 text-sm mb-8 leading-relaxed">
+            We sent a 6-digit code to your WhatsApp.<br>Enter it below to continue.
+        </p>
 
-    <form method="post" action="{% url 'verify_otp' %}">
-        {% csrf_token %}
-        <input
-            type="text"
-            name="otp"
-            maxlength="6"
-            inputmode="numeric"
-            autocomplete="one-time-code"
-            placeholder="6-digit code"
-            autofocus
-            style="width: 100%; padding: 1rem; font-size: 1.5rem; letter-spacing: 0.5rem;
-                   text-align: center; border: 1.5px solid #e5e7eb; border-radius: 14px;
-                   font-family: inherit; margin-bottom: 1.25rem;"
-        >
-        <button type="submit" class="btn" style="width: 100%; background: #22c55e; color: white;
-                border: none; padding: 1rem; border-radius: 12px; font-weight: 800;
-                font-size: 1rem; cursor: pointer;">
-            Verify & Create Account
-        </button>
-    </form>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="p-4 rounded-2xl mb-6 text-sm font-bold 
+                    {% if message.tags == 'error' %}bg-red-500/10 text-red-500 border border-red-500/20{% else %}bg-green-500/10 text-green-500 border border-green-500/20{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-    <form method="post" action="{% url 'resend_otp' %}" style="margin-top: 1rem;">
-        {% csrf_token %}
-        <button type="submit" style="width: 100%; background: white; border: 1px solid #e5e7eb;
-                padding: 0.75rem; border-radius: 12px; color: #6b7280; font-weight: 600;
-                cursor: pointer; font-family: inherit;">
-            Resend code
-        </button>
-    </form>
-</div>
+        <div class="glass-card p-8">
+            <form method="post" action="{% url 'verify_otp' %}">
+                {% csrf_token %}
+                <div class="relative">
+                    <input
+                        type="text"
+                        name="otp"
+                        maxlength="6"
+                        inputmode="numeric"
+                        autocomplete="one-time-code"
+                        placeholder="0 0 0 0 0 0"
+                        autofocus
+                        required
+                        class="w-full bg-black/40 border-2 border-white/5 rounded-2xl p-5 text-2xl font-black tracking-[0.75rem] text-center text-white outline-none focus:border-violet-600 transition-all placeholder:tracking-normal"
+                    >
+                </div>
+                
+                <button type="submit" class="w-full bg-violet-600 hover:bg-violet-700 text-white mt-6 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all active:scale-[0.98] shadow-lg shadow-violet-600/20">
+                    Verify & Create Account
+                </button>
+            </form>
+
+            <form method="post" action="{% url 'resend_otp' %}" class="mt-4">
+                {% csrf_token %}
+                <button type="submit" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors">
+                    Didn't get a code? <span class="text-violet-400">Resend</span>
+                </button>
+            </form>
+        </div>
+
+        <p class="mt-10 text-[10px] text-gray-600 uppercase tracking-[0.2em] font-bold">
+            Secure Verification by DearSelf
+        </p>
+    </div>
+
+</body>
+</html>

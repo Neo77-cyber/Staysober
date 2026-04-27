@@ -4,86 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HabitTracker | Start Your Journey</title>
+    <title>DearSelf | Start Your Journey</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            background-color: #000000; 
-            font-family: 'Inter', sans-serif; 
-            color: white; 
-            overflow-x: hidden;
-        }
-
-        .hero-bg {
-            background-image: 
-                radial-gradient(circle at 30% 50%, rgba(76, 29, 149, 0.3) 0%, rgba(0, 0, 0, 1) 65%),
-                url('https://images.unsplash.com/photo-1464802686167-b939a6910659?q=80&w=2000&auto=format&fit=crop');
-            background-size: cover; 
-            background-position: center;
-            background-attachment: fixed;
-        }
-
-        .form-container {
-            background: rgba(15, 15, 15, 0.75); 
-            backdrop-filter: blur(35px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 28px;
-        }
-
-        .habit-pill {
-            cursor: pointer;
-            transition: 0.2s all;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(255, 255, 255, 0.01);
-        }
-        .habit-pill:has(input:checked) {
-            border-color: #7c3aed;
-            background: rgba(124, 58, 237, 0.1);
-            box-shadow: 0 0 20px rgba(124, 58, 237, 0.2);
-        }
-
-        .icon-box {
-            width: 40px;
-            height: 40px;
-            border-radius: 9999px;
-            background: rgba(124, 58, 237, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-    </style>
 </head>
 <body class="min-h-screen hero-bg flex flex-col">
 
     <nav class="p-6 max-w-7xl mx-auto flex items-center gap-4 w-full">
-    <div class="p-1.5 rounded-lg flex items-center justify-center mix-blend-lighten">
-        <img src="{% static 'logo.png' %}" 
-             alt="HabitTracker" 
-             class="w-10 h-10 object-contain">
-    </div>
-    <span class="font-extrabold tracking-tighter text-2xl">HabitTracker</span>
-</nav>
+        <img src="{% static 'logo.png' %}" alt="Logo" class="w-10 h-10 object-contain">
+        <span class="font-extrabold tracking-tighter text-2xl text-white">DearSelf</span>
+    </nav>
 
-    <main class="flex-grow max-w-7xl mx-auto px-6 py-4 lg:py-10 grid lg:grid-cols-2 gap-16 items-center w-full">
+    <main class="flex-grow max-w-7xl mx-auto px-6 pt-0 pb-10 grid lg:grid-cols-2 gap-16 items-start w-full">
         
-        <div class="space-y-10 hidden lg:block">
-            <h1 class="text-7xl font-extrabold leading-[1.05] tracking-tighter">
+        <div class="space-y-6 hidden lg:block lg:mt-[100px]">
+            <h1 class="text-7xl font-extrabold leading-[1.1] tracking-tighter text-white">
                 Small Steps,<br><span class="text-violet-500">Big wins.</span>
             </h1>
-            <p class="text-gray-400 text-lg max-w-md font-medium leading-relaxed">Track habits and stay accountable via whatsapp reminders.</p>
+            <p class="text-gray-400 text-lg max-w-md font-medium leading-relaxed">Track habits and stay accountable via WhatsApp reminders.</p>
             
-            <div class="space-y-6 pt-4">
+            <div class="space-y-6 pt-2">
                 <div class="flex items-center gap-4">
-                    <div class="icon-box">
+                    <div class="icon-box p-3 bg-white/5 rounded-xl border border-white/10">
                         <img src="{% static 'timer(1).png' %}" alt="Target" class="w-5 h-5 object-contain">
                     </div>
                     <p class="text-sm font-semibold text-gray-300">AI Motivational texts 3 times a day.</p>
                 </div>
                 <div class="flex items-center gap-4">
-                    <div class="icon-box">
+                    <div class="icon-box p-3 bg-white/5 rounded-xl border border-white/10">
                         <img src="{% static 'accounting(1).png' %}" alt="Shield" class="w-5 h-5 object-contain">
                     </div>
                     <p class="text-sm font-semibold text-gray-300">After 3 streak misses; you're out.</p>
@@ -91,99 +41,62 @@
             </div>
         </div>
 
-        <div class="form-container p-8 md:p-12 w-full max-w-xl mx-auto relative border border-white/5 shadow-2xl">
-            
+        <div class="form-container p-8 md:p-12 w-full max-w-xl mx-auto shadow-2xl">
             <div class="lg:hidden text-center mb-10 border-b border-white/5 pb-8">
-                <h1 class="text-4xl font-extrabold tracking-tighter mb-3">Small steps,<br><span class="text-violet-500">Big Wins.</span></h1>
-                <p class="text-sm text-gray-500 font-medium leading-relaxed px-4">
-                    Track habits and stay accountable via <span class="text-violet-400">WhatsApp</span> reminders
-                </p>
+                <h1 class="text-4xl font-extrabold tracking-tighter mb-3 text-white">Small steps,<br><span class="text-violet-500">Big Wins.</span></h1>
             </div>
 
-            <h2 class="text-2xl font-bold mb-1 tracking-tight">Create your account</h2>
-            <p class="text-gray-500 text-sm mb-10">Verification code will be sent to your WhatsApp.</p>
+            <h2 class="text-2xl font-bold mb-1 tracking-tight text-white">Create account</h2>
+            <p class="text-gray-500 text-sm mb-8">Verification code will be sent to WhatsApp.</p>
 
-            <form method="POST" class="space-y-7">
+            <form method="POST" class="space-y-6">
                 {% csrf_token %}
                 
                 <div>
-                    <label class="text-[11px] font-bold text-gray-600 uppercase mb-2.5 block tracking-widest">WhatsApp Number</label>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block tracking-widest">WhatsApp Number</label>
                     <div class="flex items-center bg-black/40 border border-white/10 rounded-xl focus-within:border-violet-600 transition">
                         <span class="px-5 text-gray-500 font-bold border-r border-white/5 text-sm">+234</span>
-                        <input type="text" name="identifier" class="bg-transparent w-full p-4 outline-none text-white text-sm" placeholder="8123456789" required pattern="[0-9]{10}">
+                        <input type="text" name="identifier" class="bg-transparent w-full p-4 outline-none text-white text-sm" placeholder="8123456789" maxlength="10" required>
                     </div>
                 </div>
 
                 <div>
-                    <label class="text-[11px] font-bold text-gray-600 uppercase mb-2.5 block tracking-widest">Password</label>
-                    <input type="password" name="password" class="bg-black/40 border border-white/10 rounded-xl w-full p-4 outline-none focus:border-violet-600 transition text-sm" placeholder="Create a strong password" required>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block tracking-widest">Password</label>
+                    <div class="relative">
+                        <input type="password" name="password" id="signup-pass" class="bg-black/40 border border-white/10 rounded-xl w-full p-4 outline-none focus:border-violet-600 transition text-sm pr-14 text-white" required>
+                        <button type="button" class="toggle-password-btn absolute right-0 top-0 h-full px-4 text-gray-500 hover:text-violet-400">
+                            <svg class="eye-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                            <svg class="eye-slash-icon w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div>
-    <label class="text-[11px] font-bold text-gray-600 uppercase mb-4 block tracking-widest">Step 3: What are we breaking?</label>
-    <div class="grid grid-cols-2 gap-3">
-        <label class="habit-pill p-3.5 rounded-xl flex items-center gap-3">
-            <input type="radio" name="habit_choice" value="ENDLESS SCROLLING" class="hidden" checked>
-            <span class="text-xl"></span>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Endless Scrolling</span>
-        </label>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase mb-4 block tracking-widest">What are we breaking?</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="ENDLESS SCROLLING" class="hidden" checked><span class="text-[10px] font-bold uppercase text-white">Endless Scrolling</span></label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="PROCRASTINATION" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Procrastination</span></label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="LATE NIGHT EATING" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Late Night Eating</span></label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="IMPULSE BUYING" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Impulse Buying</span></label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="GAMBLING" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Gambling</span></label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="WEED SOBER" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Weed Sober</span></label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="ALCOHOL SOBER" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Alcohol Sober</span></label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3 border-dashed border-white/10 justify-center">
+                            <input type="radio" name="habit_choice" value="something-else" class="hidden">
+                            <span class="text-[10px] font-bold text-gray-500 uppercase">🖋️ Something else</span>
+                        </label>
+                    </div>
+                    <input type="text" id="custom_habit" name="custom_habit" class="hidden w-full mt-4 bg-black border border-violet-600/50 rounded-xl p-4 outline-none text-white text-sm" placeholder="Tell us what it is...">
+                </div>
 
-        <label class="habit-pill p-3.5 rounded-xl flex items-center gap-3">
-            <input type="radio" name="habit_choice" value="PROCRASTINATION" class="hidden">
-            <span class="text-xl"></span>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Procrastination</span>
-        </label>
-
-        <label class="habit-pill p-3.5 rounded-xl flex items-center gap-3">
-            <input type="radio" name="habit_choice" value="LATE NIGHT EATING" class="hidden">
-            <span class="text-xl"></span>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Late Night Eating</span>
-        </label>
-
-        <label class="habit-pill p-3.5 rounded-xl flex items-center gap-3">
-            <input type="radio" name="habit_choice" value="IMPULSE BUYING" class="hidden">
-            <span class="text-xl"></span>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Impulse Buying</span>
-        </label>
-
-        <label class="habit-pill p-3.5 rounded-xl flex items-center gap-3">
-            <input type="radio" name="habit_choice" value="GAMBLING" class="hidden">
-            <span class="text-xl"></span>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Gambling</span>
-        </label>
-
-        <label class="habit-pill p-3.5 rounded-xl flex items-center gap-3">
-            <input type="radio" name="habit_choice" value="WEED SOBER" class="hidden">
-            <span class="text-xl"></span>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Weed Sober</span>
-        </label>
-
-        <label class="habit-pill p-3.5 rounded-xl flex items-center gap-3">
-            <input type="radio" name="habit_choice" value="ALCOHOL SOBER" class="hidden">
-            <span class="text-xl"></span>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Alcohol Sober</span>
-        </label>
-
-        <label class="habit-pill p-3.5 rounded-xl flex items-center gap-3 border-dashed border-white/10 justify-center">
-            <input type="radio" name="habit_choice" value="custom" class="hidden">
-            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">🖋️ Something else...</span>
-        </label>
-    </div>
-
-    <input type="text" id="custom_habit" name="custom_habit" 
-           class="hidden w-full mt-4 bg-black border border-violet-900/50 rounded-xl p-4 outline-none text-sm text-white placeholder-gray-600 transition focus:border-violet-600" 
-           placeholder="Enter custom habit name...">
-</div>
-
-                <button type="submit" id="submit-btn" class="w-full bg-violet-600 hover:bg-violet-700 py-4.5 rounded-xl font-bold transition flex items-center justify-center gap-3 shadow-lg shadow-violet-950/20">
-                    <span id="btn-text">Send Verification Code</span>
+                <button type="submit" class="w-full bg-violet-600 hover:bg-violet-700 py-4 rounded-xl font-bold transition flex items-center justify-center gap-3 shadow-lg">
+                    <span class="btn-text uppercase text-xs tracking-widest text-white">Start My Journey</span>
+                    <div class="btn-spinner hidden spinner"></div>
                 </button>
             </form>
-            
-            <p class="text-center text-sm text-gray-600 mt-8 font-medium">Already have an account? <a href="{% url 'login' %}" class="text-violet-400 font-bold hover:text-violet-300">Log in</a></p>
+            <p class="mt-8 text-center text-sm text-gray-500">Already have an account? <a href="{% url 'login' %}" class="text-violet-400 font-bold">Log in</a></p>
         </div>
     </main>
-
     <script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>

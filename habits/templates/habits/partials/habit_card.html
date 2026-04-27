@@ -1,28 +1,49 @@
-<div class="habit-card {% if habit.marked_today %}done{% endif %}" 
+{% load static %}
+<div class="bg-white/5 border border-white/5 p-6 rounded-3xl flex items-center justify-between gap-6 habit-card {% if habit.marked_today %}done opacity-80 border-violet-500/30{% endif %}"
      id="habit-{{ habit.id }}"
      data-habit-id="{{ habit.id }}"
      data-marked="{{ habit.marked_today|yesno:'true,false' }}">
 
-    <div class="habit-body">
-        <span class="habit-category">{{ habit.get_category_display }}</span>
-        <span class="habit-name">{{ habit.name }}</span>
+    <div class="flex-grow">
+        <span class="text-[10px] font-bold text-gray-600 uppercase tracking-widest">{{ habit.get_category_display }}</span>
+        <h3 class="font-bold text-lg text-white mt-1">{{ habit.name }}</h3>
+        <p class="text-gray-500 text-xs mt-1">
+            <span class="streak-number" id="streak-{{ habit.id }}">{{ habit.current_streak }}</span> day streak 
+        </p>
 
-        <div class="streak-info">
-            <div class="streak-flame">
-                <span class="streak-number" id="streak-{{ habit.id }}">{{ habit.current_streak }}</span>
-                <span class="streak-label"> day streak</span>
-            </div>
-            <div class="miss-count {% if habit.missed_count >= 2 %}danger{% elif habit.missed_count == 1 %}warn{% endif %}">
-                {{ habit.missed_count }}/3 Misses
-            </div>
+        <div class="w-full h-1 bg-white/5 rounded-full mt-4 overflow-hidden">
+            <div class="h-full bg-violet-600 transition-all duration-700"
+                 style="width: {% widthratio habit.current_streak 30 100 %}%"></div>
         </div>
 
-        {% if habit.marked_today %}
-            <div class="done-badge"> CLOCKED IN</div>
+        <p class="text-[10px] mt-2 font-bold uppercase tracking-widest
+            {% if habit.missed_count >= 2 %}text-red-500
+            {% elif habit.missed_count == 1 %}text-yellow-500
+            {% else %}text-gray-600{% endif %}">
+            {{ habit.missed_count }}/3 misses
+        </p>
+    </div>
+
+    <div class="flex items-center shrink-0">
+        {% if not habit.marked_today %}
+        <button
+            class="clock-in-btn text-[11px] font-extrabold uppercase tracking-widest
+                   bg-violet-600 hover:bg-violet-700 px-5 py-3 rounded-xl
+                   text-white transition-colors"
+            onclick="handleClockIn(this)">
+            Clock In
+        </button>
         {% else %}
-            <button class="clock-in-btn" onclick="handleClockIn(this)">
-                Tap to clock in
-            </button>
+        <div class="done-badge flex flex-col items-center gap-1">
+            <div class="bg-violet-500/20 p-2 rounded-full">
+                <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-violet-400">
+                Clocked In
+            </span>
+        </div>
         {% endif %}
     </div>
 </div>

@@ -112,12 +112,12 @@ def index(request):
         messages.error(request, "Please select a valid habit.")
         return render(request, "habits/index.html")
 
-    # Check number isn't already registered before sending OTP
+    
     if User.objects.filter(username=clean_number).exists():
         messages.info(request, "An account with this number already exists. Please log in.")
         return redirect("login")
 
-    # Store pending registration in session — no DB writes yet
+    
     request.session['pending_registration'] = {
         'phone': clean_number,
         'password': password,
@@ -158,7 +158,7 @@ def verify_otp_view(request):
         messages.error(request, msg)
         return render(request, "habits/verify_otp.html")
 
-    # OTP passed — now create the account
+    
     try:
         with transaction.atomic():
             user = User.objects.create_user(username=pending['phone'], password=pending['password'])
@@ -248,22 +248,32 @@ def habit_list(request):
     if banned_check(request.user):
         logout(request)
         return redirect("banned")
+    
+
 
     habits = Habit.objects.filter(user=request.user)
-
-    
     today = timezone.localdate()
-    yesterday = today - timezone.timedelta(days=1)
-    for habit in habits:
-        if habit.last_marked_date and habit.last_marked_date < yesterday:
-            
-            if result["status"] == "banned":
-                logout(request)
-                return redirect("banned")
+    now = timezone.localtime()
+    hour = now.hour
+
+    if 5 <= hour < 12:
+        greeting = "Good morning"
+    elif 12 <= hour < 17:
+        greeting = "Good afternoon"
+    elif 17 <= hour < 21:
+        greeting = "Good evening"
+    else:
+        greeting = "Hey, night owl"
+
+    total_streak = sum(h.current_streak for h in habits)
+    total_misses = sum(h.missed_count for h in habits)
+    max_days_left = max((3 - h.missed_count for h in habits), default=0)
+    
+    
 
     
-    habits = Habit.objects.filter(user=request.user)
-    return render(request, "habits/habit_list.html", {"habits": habits, "today": today})
+    
+    return render(request, "habits/habit_list.html", {"habits": habits, "today": today, "total_streak": total_streak, "total_misses": total_misses, "max_days_left": max_days_left, "greeting": greeting})
 
 
 # ---------------------------------------------------------------------------
@@ -314,12 +324,9 @@ def add_habit(request):
                 user=request.user,
                 name=habit_name,
                 category=category,
-                
             )
-            
             logger.info(f"User {request.user.id} created habit: {habit_name}")
 
-            
             if request.headers.get('HX-Request'):
                 return render(request, "habits/partials/habit_card.html", {"habit": habit})
 

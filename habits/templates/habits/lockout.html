@@ -1,92 +1,44 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turf | Access Restricted</title>
+    <title>DearSelf | Access Restricted</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0f172a;
-            --text-main: #f8fafc;
-            --danger: #ef4444;
-            --accent: #334155;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-
-        .container {
-            max-width: 400px;
-            padding: 2rem;
-        }
-
-        .icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            display: block;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            color: var(--danger);
-        }
-
-        p {
-            color: #94a3b8;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
-
-        .timer-box {
-            background: var(--accent);
-            padding: 1rem;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border: 1px solid #475569;
-        }
-
-        .back-btn {
-            display: inline-block;
-            margin-top: 2rem;
-            color: #64748b;
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.2s;
-        }
-
-        .back-btn:hover {
-            color: var(--text-main);
+        body { background-color: #000; font-family: 'Inter', sans-serif; color: white; }
+        .glass-card {
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 32px;
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-6 text-center">
 
-<div class="container">
-    <span class="icon"></span>
-    <h1>Take a breather.</h1>
-    <p>
-        Too many failed attempts. To keep your account safe, we've temporarily blocked requests from your connection.
-    </p>
-    
-    <div class="timer-box">
-        Try again in about 15 minutes.
+    <div class="max-w-sm w-full">
+        <div class="mb-8 flex justify-center">
+            
+        </div>
+
+        <h1 class="text-3xl font-extrabold tracking-tight mb-4">Take a breather.</h1>
+        <p class="text-gray-500 text-sm mb-8 leading-relaxed">
+            Too many failed attempts. To keep your account safe, we've temporarily blocked requests from your connection.
+        </p>
+        
+        <div class="glass-card p-6 border-violet-500/20">
+            <p class="text-xs font-bold uppercase tracking-widest text-violet-400">
+                Try again in about 15 minutes
+            </p>
+        </div>
+
+        <a href="{% url 'login' %}" class="inline-block mt-10 text-[11px] font-bold uppercase tracking-[0.2em] text-gray-600 hover:text-white transition-colors">
+            Back to login
+        </a>
     </div>
-
-    <a href="/login/" class="back-btn">← Back to login</a>
-</div>
 
 </body>
 </html>
