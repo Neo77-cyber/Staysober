@@ -520,7 +520,7 @@ def maintenance_trigger(request):
             try:
                 habit_blocks = []
                 for habit in habits:
-                    nudge = habit.cached_nudge or "No allow your fire go out. Stay focused."
+                    nudge = habit.cached_nudge or FALLBACK_NUDGES[habit.id % len(FALLBACK_NUDGES)]
                     habit_blocks.append(
                         f"*{habit.name}*\n"
                         f"Streak: {habit.current_streak} days | Misses: {habit.missed_count}/3\n"
