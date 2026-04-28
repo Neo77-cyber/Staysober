@@ -436,6 +436,14 @@ def maintenance_trigger(request):
         )
         logger.info(summary)
         return HttpResponse(summary, content_type="text/plain")
+    
+    FALLBACK_NUDGES = [
+    "No allow your fire go out. Stay focused.",
+    "You don start, no go back now. Finish what you started.",
+    "Every day you hold on, you dey win. Keep going.",
+    "Your future self go thank you. Do am for am.",
+    "The goal no go chase itself. You must move.",
+    ]
 
 
     if task == 'send_nudges':
@@ -463,7 +471,7 @@ def maintenance_trigger(request):
                 habit_blocks = []
                 for habit in habits:
                     
-                    nudge = habit.cached_nudge or "No allow your fire go out. Stay focused."
+                    nudge = habit.cached_nudge or FALLBACK_NUDGES[habit.id % len(FALLBACK_NUDGES)]
                     habit_blocks.append(
                         f"*{habit.name}*\n"
                         f"Streak: {habit.current_streak} days | Misses: {habit.missed_count}/3\n"
