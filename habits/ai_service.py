@@ -8,13 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 GEMINI_MODELS = [
-    "gemini-3.1-flash-lite",   
-    "gemini-2.5-flash",        
-    "gemini-2.0-flash",        
+      
+    "gemini-2.5-flash",      
 ]
 
 
-QUOTA_COOLDOWN_SECONDS = 65
+QUOTA_COOLDOWN_SECONDS = 3600 
 
 FALLBACK_NUDGES = [
     "No allow your fire go out. Stay focused.",

@@ -388,6 +388,9 @@ def maintenance_trigger(request):
         )
         success = 0
         failed = 0
+        fallback_used = 0
+        lines = []
+
         for i, habit in enumerate(habits):
             try:
                 nudge = generate_habit_nudge(
@@ -395,19 +398,44 @@ def maintenance_trigger(request):
                     habit.current_streak,
                     habit.missed_count,
                 )
+
+                
+                is_fallback = nudge in [
+                    "No allow your fire go out. Stay focused.",
+                    "You don start, no go back now. Finish what you started.",
+                    "Every day you hold on, you dey win. Keep going.",
+                    "Your future self go thank you. Do am for am.",
+                    "The goal no go chase itself. You must move.",
+                ]
+
                 habit.cached_nudge = nudge
                 habit.nudge_generated_at = now
                 habit.save(update_fields=["cached_nudge", "nudge_generated_at"])
-                success += 1
-                logger.info("Nudge cached for habit %s: %s", habit.id, nudge)
+
+                if is_fallback:
+                    fallback_used += 1
+                    lines.append(f"  {habit.name}: FALLBACK — {nudge}")
+                else:
+                    success += 1
+                    lines.append(f"  {habit.name}: {nudge}")
+
+                logger.info("Habit %s nudge: %s (fallback=%s)", habit.id, nudge, is_fallback)
+
             except Exception as e:
                 failed += 1
+                lines.append(f"  {habit.name}: ERROR — {e}")
                 logger.error("Nudge generation failed for habit %s: %s", habit.id, e)
 
             if i < len(habits) - 1:
-                time.sleep(4.5)
+                time.sleep(10)
 
-        return HttpResponse(f"Generated {success}/{len(habits)} nudges. {failed} failed.")
+        summary = (
+            f"Generated {success}/{len(habits)} real nudges. "
+            f"{fallback_used} fallbacks. {failed} errors.\n\n"
+            + "\n".join(lines)
+        )
+        logger.info(summary)
+        return HttpResponse(summary, content_type="text/plain")
 
 
     if task == 'send_nudges':
