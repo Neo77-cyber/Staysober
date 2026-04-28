@@ -25,6 +25,14 @@ from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
+FALLBACK_NUDGES = [
+    "No allow your fire go out. Stay focused.",
+    "You don start, no go back now. Finish what you started.",
+    "Every day you hold on, you dey win. Keep going.",
+    "Your future self go thank you. Do am for am.",
+    "The goal no go chase itself. You must move.",
+    ]
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -437,13 +445,7 @@ def maintenance_trigger(request):
         logger.info(summary)
         return HttpResponse(summary, content_type="text/plain")
     
-    FALLBACK_NUDGES = [
-    "No allow your fire go out. Stay focused.",
-    "You don start, no go back now. Finish what you started.",
-    "Every day you hold on, you dey win. Keep going.",
-    "Your future self go thank you. Do am for am.",
-    "The goal no go chase itself. You must move.",
-    ]
+    
 
 
     if task == 'send_nudges':
