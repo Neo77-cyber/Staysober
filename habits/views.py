@@ -552,3 +552,6 @@ def maintenance_trigger(request):
         return HttpResponse("\n".join(lines), content_type="text/plain")
 
     return HttpResponseForbidden(f"Unknown task: {task}")
+
+def health_check(request):
+    return HttpResponse("ok", status=200)
