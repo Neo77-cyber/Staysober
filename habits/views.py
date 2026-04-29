@@ -364,6 +364,9 @@ def mark_habit_done(request, habit_id):
 
 
 
+def hello_word(request):
+    return render(request, 'hello.html')
+
 @login_required
 # @ratelimit(key="user", rate="1000/m", method="POST", block=True)
 def add_habit(request):
