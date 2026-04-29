@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'auditlog',
     'axes',
     'habits',
+    "debug_toolbar",
     
 ]
 
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -225,6 +227,9 @@ LOGGING = {
     },
 }
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 AXES_FAILURE_LIMIT = 10
 AXES_COOLOFF_TIME = 0.30
@@ -240,3 +245,11 @@ MAINTENANCE_KEY = env('MAINTENANCE_KEY')
 LOGIN_URL = 'login'  
 LOGIN_REDIRECT_URL = 'habit_list'
 LOGOUT_REDIRECT_URL = 'login'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')       
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD') 
+DEFAULT_FROM_EMAIL = 'DearSelf <noreply@dearself.app>'

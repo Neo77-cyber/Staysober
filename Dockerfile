@@ -32,4 +32,4 @@ USER appuser
 
 
 
-CMD ["gunicorn", "turf_project.wsgi:application", "--bind", "0.0.0.0:10000", "--log-level", "debug", "--access-logfile", "-"]
+CMD ["gunicorn", "turf_project.wsgi:application", "--bind", "0.0.0.0:10000", "--workers", "2", "--threads", "4", "--log-level", "info", "--access-logfile", "-"]

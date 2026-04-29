@@ -69,10 +69,24 @@
                 <span class="font-medium">{{ today|date:"l, j M" }}</span>
             </div>
         </header>
+                {% if not request.user.profile.is_whatsapp_verified %}
+        <div class="bg-violet-900/30 border border-violet-500/20 rounded-2xl p-4 mb-6 flex items-start gap-3">
+            
+            <div>
+               <p class="font-bold text-sm text-white">DearSelf is in early access</p>
+               <p class="text-gray-400 text-xs mt-1">
+                  WhatsApp reminders are at capacity right now.
+                  Come back daily to clock in your habits; Your streak is saved.
+                   We'll notify you when reminders are available.
+               </p>
+           </div>
+         </div>
+        {% endif %}
+
 
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             <div class="card-purple p-6 rounded-3xl flex flex-col justify-between h-32">
-                <span class="text-3xl font-bold">{{ habits.count }}</span>
+                <span class="text-3xl font-bold">{{ habits|length }}</span>
                 <span class="text-xs font-semibold uppercase tracking-wider text-white/70">Your Habits</span>
             </div>
             <div class="card-pink p-6 rounded-3xl flex flex-col justify-between h-32">

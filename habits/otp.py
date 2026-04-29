@@ -1,72 +1,74 @@
 import hashlib
 import secrets
 import logging
-from datetime import datetime, timezone as dt_timezone
-
+ 
 from django.utils import timezone
-
-from .whatsapp import send_whatsapp_message
-
+ 
 logger = logging.getLogger(__name__)
-
+ 
 OTP_EXPIRY_MINUTES = 15
 OTP_MAX_ATTEMPTS = 5
-
-
+ 
+ 
 def generate_otp() -> str:
     return str(secrets.randbelow(900000) + 100000)
-
-
-def send_otp(phone_number: str, otp: str) -> bool:
-    message = (
-        f"*Your verification code is: {otp}*\n\n"
-        f"It expires in {OTP_EXPIRY_MINUTES} minutes. Do not share this with anyone."
-    )
-    try:
-        send_whatsapp_message(phone_number, message)
-        return True
-    except Exception as e:
-        logger.error("OTP send failed for %s: %s", phone_number[:6] + "****", e)
-        return False
-
-
-def store_otp(request, phone_number: str, otp: str):
+ 
+ 
+def send_otp(phone_number: str, otp: str, email: str = None) -> tuple[bool, str]:
+    """
+    Try WhatsApp first. If quota exceeded or failed, try email.
+    Returns (success, method_used) where method_used is 'whatsapp' or 'email' or None.
+    """
+    from .whatsapp import send_otp_whatsapp, is_whatsapp_quota_exceeded
+    from .email_service import send_otp_email
+ 
+    # Try WhatsApp first
+    if not is_whatsapp_quota_exceeded():
+        sent = send_otp_whatsapp(phone_number, otp, OTP_EXPIRY_MINUTES)
+        if sent:
+            return True, "whatsapp"
+ 
+    # WhatsApp failed or quota exceeded — try email
+    if email:
+        sent = send_otp_email(email, otp, OTP_EXPIRY_MINUTES)
+        if sent:
+            return True, "email"
+ 
+    return False, None
+ 
+ 
+def store_otp(request, phone_number: str, otp: str, method: str = "whatsapp"):
     hashed = hashlib.sha256(otp.encode()).hexdigest()
-
-    
     expires_at = (timezone.now() + timezone.timedelta(minutes=OTP_EXPIRY_MINUTES)).timestamp()
-
+ 
     request.session['otp_data'] = {
         'otp_hash': hashed,
         'phone': phone_number,
-        'expires_at': expires_at,   
+        'expires_at': expires_at,
         'attempts': 0,
+        'method': method,  # track how OTP was sent
     }
-
-    
     request.session.modified = True
     request.session.save()
-
-
+ 
+ 
 def verify_otp(request, phone_number: str, submitted_otp: str) -> tuple[bool, str]:
     data = request.session.get('otp_data')
-
+ 
     if not data:
         return False, "Session expired. Please register again."
-
+ 
     if data.get('phone') != phone_number:
         return False, "Phone number mismatch. Please start again."
-
-    
-    now_ts = timezone.now().timestamp()
-    if now_ts > data['expires_at']:
+ 
+    if timezone.now().timestamp() > data['expires_at']:
         clear_otp(request)
         return False, "OTP has expired. Please request a new one."
-
+ 
     if data.get('attempts', 0) >= OTP_MAX_ATTEMPTS:
         clear_otp(request)
         return False, "Too many failed attempts. Please start again."
-
+ 
     submitted_hash = hashlib.sha256(submitted_otp.strip().encode()).hexdigest()
     if data['otp_hash'] != submitted_hash:
         data['attempts'] = data.get('attempts', 0) + 1
@@ -74,11 +76,11 @@ def verify_otp(request, phone_number: str, submitted_otp: str) -> tuple[bool, st
         request.session.modified = True
         remaining = OTP_MAX_ATTEMPTS - data['attempts']
         return False, f"Wrong code. {remaining} attempt(s) left."
-
+ 
     clear_otp(request)
     return True, "ok"
-
-
+ 
+ 
 def clear_otp(request):
     request.session.pop('otp_data', None)
     request.session.modified = True

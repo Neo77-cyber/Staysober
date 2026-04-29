@@ -86,129 +86,177 @@ def banned_check(user) -> bool:
 def index(request):
     if request.user.is_authenticated:
         return redirect("habit_list")
-
+ 
     if request.method != "POST":
         return render(request, "habits/index.html")
-
+ 
     raw_phone = request.POST.get("identifier", "").strip()
     clean_number = clean_phone_number(raw_phone)
     if not clean_number:
-        messages.error(request, "Phone number is invalid. Please remove the '0' before your phone number (e.g., 8123 instead of 0812).")
+        messages.error(request, "Phone number is invalid. Please remove the '0' before your number (e.g. 8123 not 08123).")
         return render(request, "habits/index.html")
-
+ 
     if is_ratelimited(request, group="register_phone", key=lambda g, r: clean_number,
                       rate="5/h", method="POST", increment=True):
         messages.error(request, "Too many attempts for this number. Please try again later.")
         return render(request, "habits/index.html")
-
+ 
     password = request.POST.get("password", "")
     if not password:
         messages.error(request, "A password is required.")
         return render(request, "habits/index.html")
-
+ 
     try:
         validate_password(password, user=None)
     except ValidationError as exc:
         messages.error(request, " ".join(exc.messages))
         return render(request, "habits/index.html")
-
+ 
+    # Email — optional but needed for fallback OTP
+    email = request.POST.get("email", "").strip().lower()
+ 
     habit_name, category = _parse_habit(request.POST)
     if not habit_name:
         messages.error(request, "Please select a valid habit.")
         return render(request, "habits/index.html")
-
-    
+ 
     if User.objects.filter(username=clean_number).exists():
         messages.info(request, "An account with this number already exists. Please log in.")
         return redirect("login")
-
-    
+ 
     request.session['pending_registration'] = {
         'phone': clean_number,
         'password': password,
         'habit_name': habit_name,
         'category': category,
+        'email': email,
     }
-
     request.session.modified = True
     request.session.save()
-
+ 
     otp = generate_otp()
-    sent = send_otp(clean_number, otp)
+    sent, method = send_otp(clean_number, otp, email=email or None)
+ 
     if not sent:
-        messages.error(request, "We couldn't send a WhatsApp message to that number. Please check it and try again.")
+        
+        if not email:
+            messages.error(request,
+                "We couldn't reach that number on WhatsApp. "
+                "Add your email address and we'll send the code there instead."
+            )
+        else:
+            messages.error(request, "We couldn't send a verification code. Please try again.")
         return render(request, "habits/index.html")
-
-    store_otp(request, clean_number, otp)
+ 
+    
+    request.session['otp_method'] = method
+    store_otp(request, clean_number, otp, method=method)
+ 
+    if method == "email":
+        messages.info(request,
+            f"WhatsApp is currently at capacity. We sent your code to {email} instead."
+        )
+ 
     return redirect("verify_otp")
-
-
+ 
+ 
+# --- verify_otp_view ---
+ 
 @ratelimit(key="ip", rate="20/m", method="POST", block=True)
 def verify_otp_view(request):
     if request.user.is_authenticated:
         return redirect("habit_list")
-
+ 
     pending = request.session.get('pending_registration')
     if not pending:
         messages.error(request, "Session expired. Please register again.")
         return redirect("index")
-
+ 
+    otp_method = request.session.get('otp_method', 'whatsapp')
+ 
     if request.method != "POST":
-        return render(request, "habits/verify_otp.html")
-
+        return render(request, "habits/verify_otp.html", {"otp_method": otp_method})
+ 
     submitted_otp = request.POST.get("otp", "").strip()
     if not submitted_otp:
         messages.error(request, "Please enter the code we sent you.")
-        return render(request, "habits/verify_otp.html")
-
+        return render(request, "habits/verify_otp.html", {"otp_method": otp_method})
+ 
     valid, msg = verify_otp_code(request, pending['phone'], submitted_otp)
     if not valid:
         messages.error(request, msg)
-        return render(request, "habits/verify_otp.html")
-
-    
+        return render(request, "habits/verify_otp.html", {"otp_method": otp_method})
+ 
     try:
         with transaction.atomic():
-            user = User.objects.create_user(username=pending['phone'], password=pending['password'])
-            Profile.objects.create(user=user, phone_number=pending['phone'], is_whatsapp_verified=True)
-            Habit.objects.create(user=user, name=pending['habit_name'], category=pending['category'])
-
+            user = User.objects.create_user(
+                username=pending['phone'],
+                password=pending['password'],
+                email=pending.get('email', ''),
+            )
+            Profile.objects.create(
+                user=user,
+                phone_number=pending['phone'],
+                is_whatsapp_verified=(otp_method == 'whatsapp'),
+            )
+            Habit.objects.create(
+                user=user,
+                name=pending['habit_name'],
+                category=pending['category'],
+            )
+ 
     except IntegrityError:
         messages.info(request, "An account with this number already exists. Please log in.")
         return redirect("login")
     except Exception as exc:
         logger.error("Account creation failed after OTP for %s: %s", pending['phone'], exc, exc_info=True)
-        messages.error(request, "Something went wrong creating your account. Please try again.")
+        messages.error(request, "Something went wrong. Please try again.")
         return redirect("index")
-
+ 
     request.session.pop('pending_registration', None)
+    request.session.pop('otp_method', None)
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-    try:
-        send_whatsapp_message(
-            pending['phone'],
-            "Welcome, I will be your chatbot partner that helps you keep your streak. I will remind you 3 times a day. If you lose your streak for 3 days, you are out. Be warned."
-        )
-    except Exception as e:
-        logger.warning(f"Welcome message failed for {pending['phone']}: {e}")
+ 
+    
+    if otp_method == 'whatsapp':
+        try:
+            send_whatsapp_message(
+                pending['phone'],
+                "Welcome to DearSelf. I will remind you 3 times a day. "
+                "Miss 3 days and you are out. Let's go."
+            )
+        except Exception as e:
+            logger.warning("Welcome message failed for %s: %s", pending['phone'][:4], e)
+ 
     return redirect("habit_list")
-
-
+ 
+ 
+# --- resend_otp ---
+ 
 @ratelimit(key="ip", rate="5/m", method="POST", block=True)
 def resend_otp(request):
     pending = request.session.get('pending_registration')
     if not pending:
         messages.error(request, "Session expired. Please register again.")
         return redirect("index")
-
+ 
     otp = generate_otp()
-    sent = send_otp(pending['phone'], otp)
+    sent, method = send_otp(pending['phone'], otp, email=pending.get('email') or None)
+ 
     if not sent:
         messages.error(request, "Failed to resend. Please try again.")
         return redirect("verify_otp")
-
-    store_otp(request, pending['phone'], otp)
-    messages.success(request, "A new code has been sent to your WhatsApp.")
+ 
+    request.session['otp_method'] = method
+    store_otp(request, pending['phone'], otp, method=method)
+ 
+    if method == "email":
+        messages.success(request, f"Code resent to {pending.get('email', 'your email')}.")
+    else:
+        messages.success(request, "A new code has been sent to your WhatsApp.")
+ 
     return redirect("verify_otp")
+
 
 
 # ---------------------------------------------------------------------------
@@ -256,10 +304,7 @@ def habit_list(request):
     if banned_check(request.user):
         logout(request)
         return redirect("banned")
-    
 
-
-    habits = Habit.objects.filter(user=request.user)
     today = timezone.localdate()
     now = timezone.localtime()
     hour = now.hour
@@ -273,15 +318,23 @@ def habit_list(request):
     else:
         greeting = "Hey, night owl"
 
+    habits = Habit.objects.filter(user=request.user).only(
+        'id', 'name', 'category', 'current_streak',
+        'missed_count', 'last_marked_date', 'cached_nudge'
+    )
+
     total_streak = sum(h.current_streak for h in habits)
     total_misses = sum(h.missed_count for h in habits)
     max_days_left = max((3 - h.missed_count for h in habits), default=0)
-    
-    
 
-    
-    
-    return render(request, "habits/habit_list.html", {"habits": habits, "today": today, "total_streak": total_streak, "total_misses": total_misses, "max_days_left": max_days_left, "greeting": greeting})
+    return render(request, "habits/habit_list.html", {
+        "habits": habits,
+        "today": today,
+        "total_streak": total_streak,
+        "total_misses": total_misses,
+        "max_days_left": max_days_left,
+        "greeting": greeting,
+    })
 
 
 # ---------------------------------------------------------------------------

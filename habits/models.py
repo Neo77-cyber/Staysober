@@ -53,8 +53,16 @@ class Habit(models.Model):
     cached_nudge = models.TextField(null=True, blank=True)
     nudge_generated_at = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'last_marked_date']),
+            models.Index(fields=['user']),
+        ]
+
     def __str__(self):
         return f"{self.name} ({self.user.username})"
+    
+    
 
     # ------------------------------------------------------------------
     # Properties
