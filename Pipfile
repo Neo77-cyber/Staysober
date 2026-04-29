@@ -18,6 +18,7 @@ whitenoise = "*"
 gunicorn = "*"
 django-debug-toolbar = "*"
 locust = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 
