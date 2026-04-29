@@ -14,6 +14,6 @@ urlpatterns = [
     path("banned/",                   views.banned_view,     name="banned"),
     path('maintenance_trigger/', views.maintenance_trigger, name='maintenance_check'),
     path("health/", views.health_check, name="health_check"),
-    path("hello/", views.hello_word, name="hello_word"),
+    
 
 ]

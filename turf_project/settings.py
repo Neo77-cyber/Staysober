@@ -112,7 +112,7 @@ WSGI_APPLICATION = 'turf_project.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
-        conn_max_age=300, 
+        conn_max_age=60, 
         conn_health_checks=True, 
     )
 }
