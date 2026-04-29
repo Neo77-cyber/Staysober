@@ -367,7 +367,7 @@ def mark_habit_done(request, habit_id):
 
 
 @login_required
-# @ratelimit(key="user", rate="1000/m", method="POST", block=True)
+@ratelimit(key="user", rate="10/m", method="POST", block=True)
 def add_habit(request):
     if banned_check(request.user):
         logger.warning(f"Banned user {request.user.id} attempted to add habit.")

@@ -112,7 +112,7 @@ WSGI_APPLICATION = 'turf_project.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
-        conn_max_age=60, 
+        conn_max_age=600, 
         conn_health_checks=True, 
     )
 }
@@ -174,7 +174,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # --- SECURITY & SESSIONS ---
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  
-SESSION_SAVE_EVERY_REQUEST = True 
+SESSION_SAVE_EVERY_REQUEST = False
 
 
 SESSION_COOKIE_SECURE = env('DEBUG') is False
@@ -229,13 +229,7 @@ LOGGING = {
         },
     },
 
-    'loggers': {
-        'django.security.csrf': {
-            'handlers': ['console'],
-            'level': 'DEBUG',  
-            'propagate': False,
-        },
-    },
+    
 }
 
 INTERNAL_IPS = [
