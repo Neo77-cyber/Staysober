@@ -228,6 +228,14 @@ LOGGING = {
             'propagate': False,
         },
     },
+
+    'loggers': {
+        'django.security.csrf': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  
+            'propagate': False,
+        },
+    },
 }
 
 INTERNAL_IPS = [
