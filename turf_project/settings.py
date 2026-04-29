@@ -189,7 +189,8 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://*.onrender.com" 
+    "https://*.onrender.com",
+    'https://dear-self.onrender.com'
 ]
 
 # --- LOGGING  ---
