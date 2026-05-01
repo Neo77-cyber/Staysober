@@ -517,7 +517,7 @@ def maintenance_trigger(request):
                         f"{nudge}"
                     )
 
-                wa_message = f"*{task_type}*\n\n" + "\n\n".join(habit_blocks)
+                wa_message = f"*{task_type}*\n\n" + "\n\n".join(habit_blocks) + "\n\nhttps://dear-self.onrender.com/habits/"
                 send_whatsapp_message(user.profile.phone_number, wa_message)
                 sent += 1
             except Exception as e:
@@ -566,7 +566,7 @@ def maintenance_trigger(request):
                         f"{nudge}"
                     )
 
-                wa_message = "*NIGHT WATCH*\n\n" + "\n\n".join(habit_blocks)
+                wa_message = "*NIGHT WATCH*\n\n" + "\n\n".join(habit_blocks) + "\n\nhttps://dear-self.onrender.com/habits/"
                 send_whatsapp_message(user.profile.phone_number, wa_message)
                 sent += 1
             except Exception as e:
