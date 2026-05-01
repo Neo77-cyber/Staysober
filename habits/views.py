@@ -118,68 +118,84 @@ def index(request):
 def verify_otp_view(request):
     if request.user.is_authenticated:
         return redirect("habit_list")
- 
+
     pending = request.session.get('pending_registration')
     if not pending:
         messages.error(request, "Session expired. Please register again.")
         return redirect("index")
- 
+
     otp_method = request.session.get('otp_method', 'whatsapp')
- 
+
     if request.method != "POST":
         return render(request, "habits/verify_otp.html", {"otp_method": otp_method})
- 
+
     submitted_otp = request.POST.get("otp", "").strip()
     if not submitted_otp:
         messages.error(request, "Please enter the code we sent you.")
         return render(request, "habits/verify_otp.html", {"otp_method": otp_method})
- 
+
     valid, msg = verify_otp_code(request, pending['phone'], submitted_otp)
     if not valid:
         messages.error(request, msg)
         return render(request, "habits/verify_otp.html", {"otp_method": otp_method})
- 
+
+    # FIX: Clear session BEFORE creating the user to prevent double-submit
+    # creating two requests that both pass OTP and both hit the IntegrityError path
+    phone = pending['phone']
+    password = pending['password']
+    email = pending.get('email', '')
+    habit_name = pending['habit_name']
+    category = pending['category']
+
+    request.session.pop('pending_registration', None)
+    request.session.pop('otp_method', None)
+    request.session.save()
+
+    # FIX: Check again if user was created between OTP send and now
+    if User.objects.filter(username=phone).exists():
+        messages.info(request, "An account with this number already exists. Please log in.")
+        return redirect("login")
+
     try:
         with transaction.atomic():
             user = User.objects.create_user(
-                username=pending['phone'],
-                password=pending['password'],
-                email=pending.get('email', ''),
+                username=phone,
+                password=password,
+                email=email,
             )
             Profile.objects.create(
                 user=user,
-                phone_number=pending['phone'],
+                phone_number=phone,
                 is_whatsapp_verified=(otp_method == 'whatsapp'),
             )
             Habit.objects.create(
                 user=user,
-                name=pending['habit_name'],
-                category=pending['category'],
+                name=habit_name,
+                category=category,
             )
- 
+
     except IntegrityError:
+        # This now only fires in a genuine race — log it
+        logger.warning("IntegrityError on account creation for %s — possible race", phone)
         messages.info(request, "An account with this number already exists. Please log in.")
         return redirect("login")
     except Exception as exc:
-        logger.error("Account creation failed after OTP for %s: %s", pending['phone'], exc, exc_info=True)
+        logger.error("Account creation failed after OTP for %s: %s", phone, exc, exc_info=True)
         messages.error(request, "Something went wrong. Please try again.")
         return redirect("index")
- 
-    request.session.pop('pending_registration', None)
-    request.session.pop('otp_method', None)
+
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
- 
-    
+
     if otp_method == 'whatsapp':
         try:
             send_whatsapp_message(
-                pending['phone'],
+                phone,
                 "Welcome to DearSelf. I will remind you 3 times a day. "
                 "Miss 3 days and you are out. Let's go."
             )
         except Exception as e:
-            logger.warning("Welcome message failed for %s: %s", pending['phone'][:4], e)
- 
+            logger.warning("Welcome message failed for %s: %s", phone[:4], e)
+
     return redirect("habit_list")
  
  
