@@ -416,13 +416,12 @@ def banned_view(request):
 
 @require_POST
 def maintenance_trigger(request):
-    key = request.POST.get('key') or request.headers.get('X-Maintenance-Key')
-    
-    
-    if not hmac.compare_digest(key or '', settings.MAINTENANCE_KEY):
+    key = request.headers.get('X-Maintenance-Key') or request.POST.get('key')
+
+    if not key or not hmac.compare_digest(key, settings.MAINTENANCE_KEY):
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
-    task = request.GET.get('task', 'send_nudges')  
+    task = request.GET.get('task', 'send_nudges') 
 
     now = timezone.localtime()
 
