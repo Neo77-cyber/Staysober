@@ -94,78 +94,60 @@
                     </div>
                 </div>
 
-                <div>
-    <!-- label that introduces the group -->
-    <label class="text-[10px] font-bold text-gray-500 uppercase mb-4 block tracking-widest">
-        What are we breaking?
+                <div class="grid grid-cols-2 gap-3">
+    <label class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative border border-white/10 bg-black/40 has-[:checked]:bg-violet-500/30 has-[:checked]:border-violet-600">
+        <input type="radio" name="habit_choice" value="DAILY PRAYERS" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" checked>
+        <span class="text-[10px] font-bold uppercase text-white relative">Daily Prayers</span>
     </label>
-
-    <div class="grid grid-cols-2 gap-3">
-        <!-- DAILY PRAYERS -->
-        <label for="habit_daily" class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative z-10">
-            <input type="radio" name="habit_choice" id="habit_daily" value="DAILY PRAYERS" class="hidden" checked>
-            <span class="text-[10px] font-bold uppercase text-white">Daily Prayers</span>
-        </label>
-
-        <!-- WORK OUT -->
-        <label for="habit_workout" class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative z-10">
-            <input type="radio" name="habit_choice" id="habit_workout" value="WORK OUT" class="hidden">
-            <span class="text-[10px] font-bold uppercase text-white">Work Out</span>
-        </label>
-
-        <!-- EXAM PREPARATION -->
-        <label for="habit_exam" class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative z-10">
-            <input type="radio" name="habit_choice" id="habit_exam" value="EXAM PREPARATION" class="hidden">
-            <span class="text-[10px] font-bold uppercase text-white">Exam Preparation</span>
-        </label>
-
-        <!-- GAMBLING -->
-        <label for="habit_gambling" class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative z-10">
-            <input type="radio" name="habit_choice" id="habit_gambling" value="GAMBLING" class="hidden">
-            <span class="text-[10px] font-bold uppercase text-white">Gambling</span>
-        </label>
-
-        <!-- WEED SOBER -->
-        <label for="habit_weed" class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative z-10">
-            <input type="radio" name="habit_choice" id="habit_weed" value="WEED SOBER" class="hidden">
-            <span class="text-[10px] font-bold uppercase text-white">Weed Sober</span>
-        </label>
-
-        <!-- LATE NIGHT EATING -->
-        <label for="habit_late" class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative z-10">
-            <input type="radio" name="habit_choice" id="habit_late" value="LATE NIGHT EATING" class="hidden">
-            <span class="text-[10px] font-bold uppercase text-white">Late Night Eating</span>
-        </label>
-
-        <!-- BUY BUY -->
-        <label for="habit_buy" class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative z-10">
-            <input type="radio" name="habit_choice" id="habit_buy" value="BUY BUY" class="hidden">
-            <span class="text-[10px] font-bold uppercase text-white">Buy Buy</span>
-        </label>
-
-        <!-- ALCOHOL SOBER -->
-        <label for="habit_alcohol" class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative z-10">
-            <input type="radio" name="habit_choice" id="habit_alcohol" value="ALCOHOL SOBER" class="hidden">
-            <span class="text-[10px] font-bold uppercase text-white">Alcohol Sober</span>
-        </label>
-
-        <!-- SOMETHING ELSE (custom habit) -->
-        <label for="habit_other" class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative z-10 border-dashed border-white/10 justify-center">
-            <input type="radio" name="habit_choice" id="habit_other" value="something-else" class="hidden">
-            <span class="text-[10px] font-bold text-gray-500 uppercase">🖋️ Something else</span>
-        </label>
-    </div>
-
-    <!-- Custom habit input (shown when “something‑else” is selected) -->
-    <input type="text" id="custom_habit" name="custom_habit" class="hidden w-full mt-4 bg-black border border-violet-600/50 rounded-xl p-4 outline-none text-white text-base md:text-sm"
-           placeholder="Tell us what it is...">
+    
+    <label class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative border border-white/10 bg-black/40 has-[:checked]:bg-violet-500/30 has-[:checked]:border-violet-600">
+        <input type="radio" name="habit_choice" value="WORK OUT" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+        <span class="text-[10px] font-bold uppercase text-white relative">Work Out</span>
+    </label>
+    
+    <label class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative border border-white/10 bg-black/40 has-[:checked]:bg-violet-500/30 has-[:checked]:border-violet-600">
+        <input type="radio" name="habit_choice" value="EXAM PREPARATION" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+        <span class="text-[10px] font-bold uppercase text-white relative">Exam Preparation</span>
+    </label>
+    
+    <label class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative border border-white/10 bg-black/40 has-[:checked]:bg-violet-500/30 has-[:checked]:border-violet-600">
+        <input type="radio" name="habit_choice" value="GAMBLING" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+        <span class="text-[10px] font-bold uppercase text-white relative">Gambling</span>
+    </label>
+    
+    <label class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative border border-white/10 bg-black/40 has-[:checked]:bg-violet-500/30 has-[:checked]:border-violet-600">
+        <input type="radio" name="habit_choice" value="WEED SOBER" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+        <span class="text-[10px] font-bold uppercase text-white relative">Weed Sober</span>
+    </label>
+    
+    <label class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative border border-white/10 bg-black/40 has-[:checked]:bg-violet-500/30 has-[:checked]:border-violet-600">
+        <input type="radio" name="habit_choice" value="LATE NIGHT EATING" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+        <span class="text-[10px] font-bold uppercase text-white relative">Late Night Eating</span>
+    </label>
+    
+    <label class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative border border-white/10 bg-black/40 has-[:checked]:bg-violet-500/30 has-[:checked]:border-violet-600">
+        <input type="radio" name="habit_choice" value="BUY BUY" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+        <span class="text-[10px] font-bold uppercase text-white relative">Buy Buy</span>
+    </label>
+    
+    <label class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative border border-white/10 bg-black/40 has-[:checked]:bg-violet-500/30 has-[:checked]:border-violet-600">
+        <input type="radio" name="habit_choice" value="ALCOHOL SOBER" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+        <span class="text-[10px] font-bold uppercase text-white relative">Alcohol Sober</span>
+    </label>
+    
+    <label class="habit-pill p-3 rounded-xl flex items-center gap-3 cursor-pointer relative border border-dashed border-white/20 bg-black/40 has-[:checked]:bg-violet-500/30 has-[:checked]:border-violet-600 justify-center">
+        <input type="radio" name="habit_choice" value="something-else" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+        <span class="text-[10px] font-bold uppercase text-gray-500 relative">🖋️ Something else</span>
+    </label>
 </div>
 
+<!-- Custom habit input field - RIGHT HERE -->
+<input type="text" id="custom_habit" name="custom_habit" class="hidden w-full mt-4 bg-black/40 border border-white/10 rounded-xl p-4 outline-none focus:border-violet-600 transition text-base md:text-sm text-white" placeholder="Tell us what it is...">
 
                 <button type="submit" class="w-full bg-violet-600 hover:bg-violet-700 py-4 rounded-xl font-bold transition flex items-center justify-center gap-3 shadow-lg">
-                    <span class="btn-text uppercase text-xs tracking-widest text-white">Start My Journey</span>
-                    <div class="btn-spinner hidden spinner"></div>
-                </button>
+    <span class="btn-text uppercase text-xs tracking-widest text-white">Start My Journey</span>
+    <div class="btn-spinner hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+</button>
             </form>
             <p class="mt-8 text-center text-sm text-gray-500">Already have an account? <a href="{% url 'login' %}" class="text-violet-400 font-bold">Log in</a></p>
         </div>

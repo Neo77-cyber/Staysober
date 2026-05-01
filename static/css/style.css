@@ -7,7 +7,7 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0;
-    /* Ensure the background stays fixed and doesn't scroll with the keyboard */
+    
     background-color: var(--bg-black);
 }
 
@@ -27,7 +27,7 @@ html, body {
     border-radius: 24px;
 }
 
-/* Fix for mobile keyboard: prevents background from moving */
+
 @media (max-height: 600px) {
     .hero-bg {
         background-attachment: scroll;

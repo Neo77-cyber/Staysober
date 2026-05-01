@@ -116,11 +116,15 @@ def index(request):
  
 @ratelimit(key="ip", rate="5/m", method="POST", block=True)
 def verify_otp_view(request):
+
+    
+
     if request.user.is_authenticated:
         return redirect("habit_list")
 
     pending = request.session.get('pending_registration')
     if not pending:
+        logger.error("No pending_registration in session. Session contents: %s", dict(request.session))
         messages.error(request, "Session expired. Please register again.")
         return redirect("index")
 
