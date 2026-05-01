@@ -14,6 +14,8 @@ from pathlib import Path
 import environ
 import os
 import dj_database_url
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 
 
@@ -29,6 +31,7 @@ env = environ.Env(
     GEMINI_API_KEY=(str, ''),
     MAINTENANCE_KEY=(str, '')
 )
+SENTRY_DSN = env('SENTRY_DSN', default=None)
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
@@ -59,10 +62,12 @@ INSTALLED_APPS = [
     'axes',
     'habits',
     "debug_toolbar",
+    'django_prometheus',
     
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -74,6 +79,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'axes.middleware.AxesMiddleware',
     'auditlog.middleware.AuditlogMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
     
 ]
 
@@ -112,7 +118,7 @@ WSGI_APPLICATION = 'turf_project.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600, 
+        conn_max_age=60, 
         conn_health_checks=True, 
     )
 }
@@ -185,9 +191,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 2592000 
 SESSION_COOKIE_SAMESITE = 'Lax'
 
-# Security Headers
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_SSL_REDIRECT = not DEBUG
 
 
 CSRF_TRUSTED_ORIGINS = [
@@ -195,7 +201,15 @@ CSRF_TRUSTED_ORIGINS = [
     'https://dear-self.onrender.com'
 ]
 
-# --- LOGGING  ---
+AXES_FAILURE_LIMIT = 10
+AXES_COOLOFF_TIME = 0.30
+AXES_LOCKOUT_TEMPLATE = 'habits/lockout.html'
+
+LOGIN_URL = 'login'  
+LOGIN_REDIRECT_URL = 'habit_list'
+LOGOUT_REDIRECT_URL = 'login'
+
+# --- LOGGING & MONITORING  ---
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -232,24 +246,31 @@ LOGGING = {
     
 }
 
+
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=1.0,
+        send_default_pii=True,
+        
+        environment="production" if not DEBUG else "development",
+    )
+
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-AXES_FAILURE_LIMIT = 10
-AXES_COOLOFF_TIME = 0.30
-AXES_LOCKOUT_TEMPLATE = 'habits/lockout.html'
 
-# Green API & Gemini
+
+# EXTERNAL API'S
 GREEN_API_ID = env('GREEN_API_ID_INSTANCE')
 GREEN_API_TOKEN = env('GREEN_API_TOKEN')
 GEMINI_API_KEY = env('GEMINI_API_KEY') 
 
 MAINTENANCE_KEY = env('MAINTENANCE_KEY')
 
-LOGIN_URL = 'login'  
-LOGIN_REDIRECT_URL = 'habit_list'
-LOGOUT_REDIRECT_URL = 'login'
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

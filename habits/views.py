@@ -1,5 +1,9 @@
 import logging
-import phonenumbers
+import time
+from collections import defaultdict
+import hmac
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -7,80 +11,28 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
-from django.http import JsonResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+
+
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.core import is_ratelimited
-from typing import Union
-from django.http import HttpResponse,  HttpResponseForbidden
-from .ai_service import generate_habit_nudge
-from .whatsapp import send_whatsapp_message 
-from django.conf import settings
-from .otp import generate_otp, send_otp, store_otp, verify_otp as verify_otp_code, clear_otp
+
+
 from .models import Habit, Profile
-import time
-from collections import defaultdict
+from .services.ai_service import generate_habit_nudge, FALLBACK_NUDGES 
+from .services.helpers import clean_phone_number, parse_habit, banned_check
+from .services.otp import generate_otp, send_otp, store_otp, verify_otp as verify_otp_code, clear_otp
+from .services.whatsapp import send_whatsapp_message
 
 logger = logging.getLogger(__name__)
 
-FALLBACK_NUDGES = [
-    "No allow your fire go out. Stay focused.",
-    "You don start, no go back now. Finish what you started.",
-    "Every day you hold on, you dey win. Keep going.",
-    "Your future self go thank you. Do am for am.",
-    "The goal no go chase itself. You must move.",
-    ]
-
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Authentication
 # ---------------------------------------------------------------------------
-
-def clean_phone_number(raw_phone: str) -> Union[str, None]:
-    
-    try:
-        parsed = phonenumbers.parse(raw_phone, "NG")
-        if phonenumbers.is_valid_number(parsed):
-            return (
-                phonenumbers
-                .format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
-                .replace("+", "")
-            )
-    except phonenumbers.NumberParseException:
-        pass
-    return None
-
-
-def _parse_habit(post_data: dict) -> Union[tuple[str, str], tuple[None, None]]: 
-    choice = post_data.get("habit_choice", "").strip()
-    custom_name = post_data.get("custom_habit", "").strip()
-
-    if choice == "custom":
-        if not custom_name:
-            return None, None
-        return custom_name[:100], "CUSTOM"
-
-    habit_name = dict(Habit.HABIT_CHOICES).get(choice.upper())
-    if not habit_name:
-        return None, None
-    return habit_name, choice.upper()
-
-
-def banned_check(user) -> bool:
-   
-    return not user.is_active
-
-
-# ---------------------------------------------------------------------------
-# Registration
-# ---------------------------------------------------------------------------
-
-
-
-
-
 
 @ratelimit(key="ip", rate="10/m", method="POST", block=True)
 def index(request):
@@ -112,10 +64,10 @@ def index(request):
         messages.error(request, " ".join(exc.messages))
         return render(request, "habits/index.html")
  
-    # Email — optional but needed for fallback OTP
+    
     email = request.POST.get("email", "").strip().lower()
  
-    habit_name, category = _parse_habit(request.POST)
+    habit_name, category = parse_habit(request.POST)
     if not habit_name:
         messages.error(request, "Please select a valid habit.")
         return render(request, "habits/index.html")
@@ -162,7 +114,7 @@ def index(request):
  
 # --- verify_otp_view ---
  
-@ratelimit(key="ip", rate="20/m", method="POST", block=True)
+@ratelimit(key="ip", rate="5/m", method="POST", block=True)
 def verify_otp_view(request):
     if request.user.is_authenticated:
         return redirect("habit_list")
@@ -233,7 +185,7 @@ def verify_otp_view(request):
  
 # --- resend_otp ---
  
-@ratelimit(key="ip", rate="5/m", method="POST", block=True)
+@ratelimit(key="ip", rate="10/m", method="POST", block=True)
 def resend_otp(request):
     pending = request.session.get('pending_registration')
     if not pending:
@@ -263,7 +215,7 @@ def resend_otp(request):
 # Login  
 # ---------------------------------------------------------------------------
 
-@ratelimit(key="ip", rate="30/m", method="POST", block=True)
+@ratelimit(key="ip", rate="10/m", method="POST", block=True)
 def login_view(request):
     if request.user.is_authenticated:
         return redirect("habit_list")
@@ -275,6 +227,12 @@ def login_view(request):
         clean_number = clean_phone_number(raw_phone)
         if not clean_number:
             messages.error(request, "That phone number is not valid.")
+            return render(request, "habits/login.html")
+
+        
+        if is_ratelimited(request, group="login_user", key=lambda g, r: clean_number,
+                        rate="5/h", method="POST", increment=True):
+            messages.error(request, "Too many failed login attempts for this number. Try again in an hour.")
             return render(request, "habits/login.html")
 
         
@@ -294,7 +252,23 @@ def login_view(request):
 
     return render(request, "habits/login.html")
 
+# ---------------------------------------------------------------------------
+# Logout
+# ---------------------------------------------------------------------------
 
+@login_required
+def user_logout(request):
+    if request.method == "POST":
+        logout(request)
+        messages.success(request, "You have been logged out.")
+        return redirect("index")
+    return redirect("habit_list")
+
+def lockout_view(request, exception=None):
+    return render(request, 'habits/lockout.html', status=403)
+
+
+    
 # ---------------------------------------------------------------------------
 # Habit list (dashboard)
 # ---------------------------------------------------------------------------
@@ -317,6 +291,8 @@ def habit_list(request):
         greeting = "Good evening"
     else:
         greeting = "Hey, night owl"
+
+    
 
     habits = Habit.objects.filter(user=request.user).only(
         'id', 'name', 'category', 'current_streak',
@@ -343,6 +319,7 @@ def habit_list(request):
 
 @login_required
 @require_POST
+@ratelimit(key="user", rate="30/m", method="POST", block=True)
 def mark_habit_done(request, habit_id):
     if banned_check(request.user):
         logout(request)
@@ -363,8 +340,9 @@ def mark_habit_done(request, habit_id):
 
 
 
-
-
+# ---------------------------------------------------------------------------
+# Add Habit
+# ---------------------------------------------------------------------------
 
 @login_required
 @ratelimit(key="user", rate="10/m", method="POST", block=True)
@@ -376,7 +354,7 @@ def add_habit(request):
     if request.method != "POST":
         return render(request, "habits/add_habit.html")
 
-    habit_name, category = _parse_habit(request.POST)
+    habit_name, category = parse_habit(request.POST)
     if not habit_name:
         return HttpResponse("Invalid parameters.", status=400)
 
@@ -412,20 +390,7 @@ def banned_view(request):
     return render(request, "habits/banned.html", status=403)
 
 
-# ---------------------------------------------------------------------------
-# Logout
-# ---------------------------------------------------------------------------
 
-@login_required
-def user_logout(request):
-    if request.method == "POST":
-        logout(request)
-        messages.success(request, "You have been logged out.")
-        return redirect("index")
-    return redirect("habit_list")
-
-def lockout_view(request, exception=None):
-    return render(request, 'habits/lockout.html', status=403)
 
 
 # ---------------------------------------------------------------------------
@@ -433,10 +398,13 @@ def lockout_view(request, exception=None):
 # ---------------------------------------------------------------------------
 
 
+@require_POST
 def maintenance_trigger(request):
-    key = request.GET.get('key')
-    if key != settings.MAINTENANCE_KEY:
-        return HttpResponseForbidden("Nice try!")
+    key = request.POST.get('key') or request.headers.get('X-Maintenance-Key')
+    
+    
+    if not hmac.compare_digest(key or '', settings.MAINTENANCE_KEY):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
 
     task = request.GET.get('task', 'send_nudges')  
 

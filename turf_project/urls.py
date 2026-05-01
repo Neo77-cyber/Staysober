@@ -22,6 +22,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('habits.urls')),
+    path('', include('django_prometheus.urls')),
 ]
 
 if settings.DEBUG:

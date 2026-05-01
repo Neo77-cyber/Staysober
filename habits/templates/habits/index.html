@@ -3,8 +3,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
     <title>DearSelf | Start Your Journey</title>
+    <meta name="description" content="Keep Streaks, manage your positive habits and achieve your goals with DearSelf.">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <meta property="og:title" content="DearSelf | Start Your Journey">
+    <meta property="og:image" content="{% static 'favicon.png' %}">
+    <meta name="twitter:card" content="summary">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
@@ -27,13 +35,13 @@
             
             <div class="space-y-6 pt-2">
                 <div class="flex items-center gap-4">
-                    <div class="icon-box p-3 bg-white/5 rounded-xl border border-white/10">
+                    <div class="icon-box">
                         <img src="{% static 'timer(1).png' %}" alt="Target" class="w-5 h-5 object-contain">
                     </div>
                     <p class="text-sm font-semibold text-gray-300">AI Motivational texts 3 times a day.</p>
                 </div>
                 <div class="flex items-center gap-4">
-                    <div class="icon-box p-3 bg-white/5 rounded-xl border border-white/10">
+                    <div class="icon-box">
                         <img src="{% static 'accounting(1).png' %}" alt="Shield" class="w-5 h-5 object-contain">
                     </div>
                     <p class="text-sm font-semibold text-gray-300">After 3 streak misses; you're out.</p>
@@ -41,15 +49,15 @@
             </div>
         </div>
 
-        <div class="form-container p-8 md:p-12 w-full max-w-xl mx-auto shadow-2xl">
+        <div class="form-container p-6 md:p-12 w-full max-w-xl mx-auto shadow-2xl">
             <div class="lg:hidden text-center mb-10 border-b border-white/5 pb-8">
                 <h1 class="text-4xl font-extrabold tracking-tighter mb-3 text-white">Small steps,<br><span class="text-violet-500">Big Wins.</span></h1>
                 <p class="text-gray-400 text-sm">Track your habits and stay accountable via WhatsApp reminders.</p>
-                
             </div>
 
             <h2 class="text-2xl font-bold mb-1 tracking-tight text-white">Create account</h2>
             <p class="text-gray-500 text-sm mb-8">Verification code will be sent to WhatsApp.</p>
+            
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert p-4 rounded-xl mb-4 {% if message.tags == 'error' %}bg-red-500/10 text-red-500{% else %}bg-violet-500/10 text-violet-500{% endif %}">
@@ -57,33 +65,31 @@
                     </div>
                 {% endfor %}
             {% endif %}
+
             <form method="POST" class="space-y-6">
                 {% csrf_token %}
                 
                 <div>
                     <label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block tracking-widest">WhatsApp Number</label>
                     <div class="flex items-center bg-black/40 border border-white/10 rounded-xl focus-within:border-violet-600 transition">
-                        <span class="px-5 text-gray-500 font-bold border-r border-white/5 text-sm">+234</span>
-                        <input type="text" name="identifier" class="bg-transparent w-full p-4 outline-none text-white text-sm" placeholder="8123456789" maxlength="10" required>
+                        <span class="px-5 text-gray-500 font-bold border-r border-white/5 text-base">+234</span>
+                        <input type="text" name="identifier" class="bg-transparent w-full p-4 outline-none text-white text-base md:text-sm" placeholder="8123456789" maxlength="10" required>
                     </div>
                 </div>
+
                 <div>
-                <label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block tracking-widest">
-                   Email <span class="text-gray-600 normal-case">(recommended as backup)</span>
-               </label>
-               <input type="email" name="email"
-                       class="bg-black/40 border border-white/10 rounded-xl w-full p-4 outline-none
-                              focus:border-violet-600 transition text-sm text-white"
-                     placeholder="you@example.com">
-            </div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block tracking-widest">
+                       Email <span class="text-gray-600 normal-case">(recommended backup)</span>
+                    </label>
+                    <input type="email" name="email" class="bg-black/40 border border-white/10 rounded-xl w-full p-4 outline-none focus:border-violet-600 transition text-base md:text-sm text-white" placeholder="you@example.com">
+                </div>
 
                 <div>
                     <label class="text-[10px] font-bold text-gray-500 uppercase mb-2 block tracking-widest">Password</label>
                     <div class="relative">
-                        <input type="password" name="password" id="signup-pass" class="bg-black/40 border border-white/10 rounded-xl w-full p-4 outline-none focus:border-violet-600 transition text-sm pr-14 text-white" required>
+                        <input type="password" name="password" id="signup-pass" class="bg-black/40 border border-white/10 rounded-xl w-full p-4 outline-none focus:border-violet-600 transition text-base md:text-sm pr-14 text-white" required>
                         <button type="button" class="toggle-password-btn absolute right-0 top-0 h-full px-4 text-gray-500 hover:text-violet-400">
                             <svg class="eye-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
-                            <svg class="eye-slash-icon w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
                         </button>
                     </div>
                 </div>
@@ -91,20 +97,44 @@
                 <div>
                     <label class="text-[10px] font-bold text-gray-500 uppercase mb-4 block tracking-widest">What are we breaking?</label>
                     <div class="grid grid-cols-2 gap-3">
-                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="DAILY PRAYERS" class="hidden" checked><span class="text-[10px] font-bold uppercase text-white">Daily Prayers</span></label>
-                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="WORK OUT" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Work Out</span></label>
-                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="EXAM PREPARATION" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Exam Preparation</span></label>
-                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="GAMBLING" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Gambling</span></label>
-                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="WEED SOBER" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Weed Sober</span></label>
-                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="LATE NIGHT EATING" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Late Night Eating</span></label>
-                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="BUY BUY" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Buy Buy</span></label>
-                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3"><input type="radio" name="habit_choice" value="ALCOHOL SOBER" class="hidden"><span class="text-[10px] font-bold uppercase text-white">Alcohol Sober</span></label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3">
+                            <input type="radio" name="habit_choice" value="DAILY PRAYERS" class="hidden" checked>
+                            <span class="text-[10px] font-bold uppercase text-white">Daily Prayers</span>
+                        </label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3">
+                            <input type="radio" name="habit_choice" value="WORK OUT" class="hidden">
+                            <span class="text-[10px] font-bold uppercase text-white">Work Out</span>
+                        </label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3">
+                            <input type="radio" name="habit_choice" value="EXAM PREPARATION" class="hidden">
+                            <span class="text-[10px] font-bold uppercase text-white">Exam Preparation</span>
+                        </label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3">
+                            <input type="radio" name="habit_choice" value="GAMBLING" class="hidden">
+                            <span class="text-[10px] font-bold uppercase text-white">Gambling</span>
+                        </label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3">
+                            <input type="radio" name="habit_choice" value="WEED SOBER" class="hidden">
+                            <span class="text-[10px] font-bold uppercase text-white">Weed Sober</span>
+                        </label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3">
+                            <input type="radio" name="habit_choice" value="LATE NIGHT EATING" class="hidden">
+                            <span class="text-[10px] font-bold uppercase text-white">Late Night Eating</span>
+                        </label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3">
+                            <input type="radio" name="habit_choice" value="BUY BUY" class="hidden">
+                            <span class="text-[10px] font-bold uppercase text-white">Buy Buy</span>
+                        </label>
+                        <label class="habit-pill p-3 rounded-xl flex items-center gap-3">
+                            <input type="radio" name="habit_choice" value="ALCOHOL SOBER" class="hidden">
+                            <span class="text-[10px] font-bold uppercase text-white">Alcohol Sober</span>
+                        </label>
                         <label class="habit-pill p-3 rounded-xl flex items-center gap-3 border-dashed border-white/10 justify-center">
                             <input type="radio" name="habit_choice" value="something-else" class="hidden">
                             <span class="text-[10px] font-bold text-gray-500 uppercase">🖋️ Something else</span>
                         </label>
                     </div>
-                    <input type="text" id="custom_habit" name="custom_habit" class="hidden w-full mt-4 bg-black border border-violet-600/50 rounded-xl p-4 outline-none text-white text-sm" placeholder="Tell us what it is...">
+                    <input type="text" id="custom_habit" name="custom_habit" class="hidden w-full mt-4 bg-black border border-violet-600/50 rounded-xl p-4 outline-none text-white text-base md:text-sm" placeholder="Tell us what it is...">
                 </div>
 
                 <button type="submit" class="w-full bg-violet-600 hover:bg-violet-700 py-4 rounded-xl font-bold transition flex items-center justify-center gap-3 shadow-lg">

@@ -1,6 +1,10 @@
 import hashlib
 import secrets
 import logging
+from .whatsapp import send_otp_whatsapp, is_whatsapp_quota_exceeded
+from .email_service import send_otp_email
+
+from django_ratelimit.decorators import ratelimit
  
 from django.utils import timezone
  
@@ -13,22 +17,15 @@ OTP_MAX_ATTEMPTS = 5
 def generate_otp() -> str:
     return str(secrets.randbelow(900000) + 100000)
  
- 
+@ratelimit(key='ip', rate='5/m', block=True)
 def send_otp(phone_number: str, otp: str, email: str = None) -> tuple[bool, str]:
-    """
-    Try WhatsApp first. If quota exceeded or failed, try email.
-    Returns (success, method_used) where method_used is 'whatsapp' or 'email' or None.
-    """
-    from .whatsapp import send_otp_whatsapp, is_whatsapp_quota_exceeded
-    from .email_service import send_otp_email
- 
-    # Try WhatsApp first
+    
     if not is_whatsapp_quota_exceeded():
         sent = send_otp_whatsapp(phone_number, otp, OTP_EXPIRY_MINUTES)
         if sent:
             return True, "whatsapp"
  
-    # WhatsApp failed or quota exceeded — try email
+    
     if email:
         sent = send_otp_email(email, otp, OTP_EXPIRY_MINUTES)
         if sent:
@@ -46,7 +43,7 @@ def store_otp(request, phone_number: str, otp: str, method: str = "whatsapp"):
         'phone': phone_number,
         'expires_at': expires_at,
         'attempts': 0,
-        'method': method,  # track how OTP was sent
+        'method': method, 
     }
     request.session.modified = True
     request.session.save()

@@ -2,11 +2,12 @@ from whatsapp_api_client_python import API
 from django.conf import settings
 from django.core.cache import cache
 import logging
+from .helpers import mask_phone
  
 logger = logging.getLogger(__name__)
  
 WA_QUOTA_EXCEEDED_KEY = "green_api_quota_exceeded"
-WA_QUOTA_COOLDOWN = 60 * 60 * 6  # 6 hours before retrying WhatsApp
+WA_QUOTA_COOLDOWN = 60 * 60 * 6  
  
 green_api = None
  
@@ -38,7 +39,7 @@ def send_whatsapp_message(phone_number: str, message: str) -> bool:
         if response.code == 200:
             return True
  
-        # Quota exhausted codes from Green API
+        
         if response.code in (429, 403) or (
             hasattr(response, 'data') and
             'quota' in str(response.data).lower()
@@ -52,12 +53,12 @@ def send_whatsapp_message(phone_number: str, message: str) -> bool:
         error_str = str(e).lower()
         if 'quota' in error_str or 'limit' in error_str or 'exhausted' in error_str:
             mark_whatsapp_quota_exceeded()
-        logger.error("Failed to send WA message to %s****: %s", phone_number[:4], e)
+        logger.error("Failed to send WA message to %s****: %s", mask_phone(phone_number)[:4], e)
         return False
  
  
 def send_otp_whatsapp(phone_number: str, otp: str, expiry_minutes: int) -> bool:
-    """Send OTP via WhatsApp. Returns False if quota exceeded or any failure."""
+   
     if is_whatsapp_quota_exceeded():
         return False
  

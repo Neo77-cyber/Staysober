@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
  
  
 def send_otp_email(email: str, otp: str, expiry_minutes: int) -> bool:
-    """Send OTP via email as fallback when WhatsApp quota is exceeded."""
+    
     try:
         send_mail(
             subject="Your DearSelf verification code",
