@@ -49,7 +49,7 @@ def verify_otp(request, phone_number: str, submitted_otp: str) -> tuple[bool, st
         return False, "Session expired. Please register again."
     if data.get('phone') != phone_number:
         return False, "Phone number mismatch. Please start again."
-    # FIX: was [timezone.now](http://timezone.now)()
+    
     if timezone.now().timestamp() > data['expires_at']:
         clear_otp(request)
         return False, "OTP has expired. Please request a new one."
@@ -70,5 +70,7 @@ def verify_otp(request, phone_number: str, submitted_otp: str) -> tuple[bool, st
 
 
 def clear_otp(request):
-    request.session.pop('otp_data', None)
-    request.session.modified = True
+    if 'otp_data' in request.session:
+        del request.session['otp_data']
+        request.session.modified = True
+    
