@@ -139,8 +139,7 @@ def verify_otp_view(request):
         messages.error(request, msg)
         return render(request, "habits/verify_otp.html", {"otp_method": otp_method})
 
-    # FIX: Clear session BEFORE creating the user to prevent double-submit
-    # creating two requests that both pass OTP and both hit the IntegrityError path
+    
     phone = pending['phone']
     password = pending['password']
     email = pending.get('email', '')
@@ -151,7 +150,7 @@ def verify_otp_view(request):
     request.session.pop('otp_method', None)
     request.session.save()
 
-    # FIX: Check again if user was created between OTP send and now
+    
     if User.objects.filter(username=phone).exists():
         messages.info(request, "An account with this number already exists. Please log in.")
         return redirect("login")
@@ -175,7 +174,7 @@ def verify_otp_view(request):
             )
 
     except IntegrityError:
-        # This now only fires in a genuine race — log it
+       
         logger.warning("IntegrityError on account creation for %s — possible race", phone)
         messages.info(request, "An account with this number already exists. Please log in.")
         return redirect("login")
@@ -483,7 +482,7 @@ def maintenance_trigger(request):
         logger.info(summary)
         return HttpResponse(summary, content_type="text/plain")
     
-    
+    DASHBOARD_URL = "https://dear-self.onrender.com/habits/"
 
 
     if task == 'send_nudges':
