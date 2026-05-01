@@ -15,5 +15,7 @@ urlpatterns = [
     path('maintenance_trigger/', views.maintenance_trigger, name='maintenance_check'),
     path("health/", views.health_check, name="health_check"),
     
+    path('session-debug/', views.session_debug),
+    
 
 ]
