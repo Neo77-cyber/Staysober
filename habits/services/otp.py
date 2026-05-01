@@ -4,7 +4,7 @@ import logging
 from .whatsapp import send_otp_whatsapp, is_whatsapp_quota_exceeded
 from .email_service import send_otp_email
 
-from django_ratelimit.decorators import ratelimit
+
  
 from django.utils import timezone
  
@@ -17,7 +17,7 @@ OTP_MAX_ATTEMPTS = 5
 def generate_otp() -> str:
     return str(secrets.randbelow(900000) + 100000)
  
-@ratelimit(key='ip', rate='5/m', block=True)
+
 def send_otp(phone_number: str, otp: str, email: str = None) -> tuple[bool, str]:
     
     if not is_whatsapp_quota_exceeded():

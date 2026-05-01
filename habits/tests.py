@@ -1079,9 +1079,8 @@ class AddHabitViewTests(TestCase):
         self.assertIn(exists, [True, False])
 
     def test_duplicate_habit_returns_400(self):
-        
         self.client.force_login(self.user)
-        self.client.post(self.url, {"habit_choice": self.first_key})
+        self.client.post(self.url, {"habit_choice": self.first_key}, follow=True)  # follow redirect
         response = self.client.post(self.url, {"habit_choice": self.first_key})
         self.assertIn(response.status_code, [400, 500])
 
