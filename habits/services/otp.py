@@ -29,7 +29,7 @@ def send_otp(phone_number: str, otp: str, email: str = None) -> tuple[bool, str]
 
 def store_otp(request, phone_number: str, otp: str, method: str = "whatsapp"):
     hashed = hashlib.sha256(otp.encode()).hexdigest()
-    # FIX: was ([timezone.now](http://timezone.now)() — broken URL artifact
+    
     expires_at = (timezone.now() + timezone.timedelta(minutes=OTP_EXPIRY_MINUTES)).timestamp()
     request.session['otp_data'] = {
         'otp_hash': hashed,
@@ -39,7 +39,7 @@ def store_otp(request, phone_number: str, otp: str, method: str = "whatsapp"):
         'method': method,
     }
     request.session.modified = True
-    # FIX: was [request.session.save](http://request.session.save)() — broken URL artifact
+    
     request.session.save()
 
 

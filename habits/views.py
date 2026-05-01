@@ -595,10 +595,9 @@ def health_check(request):
 
 
 def session_debug(request):
-    from django.http import JsonResponse
     return JsonResponse({
         'session_key': request.session.session_key,
+        'session_exists': bool(request.session.session_key),
         'has_pending': 'pending_registration' in request.session,
         'session_engine': request.session.__class__.__module__,
-        'db_backend': str(request.session._session_key),
     })
