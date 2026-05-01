@@ -70,7 +70,5 @@ def verify_otp(request, phone_number: str, submitted_otp: str) -> tuple[bool, st
 
 
 def clear_otp(request):
-    if 'otp_data' in request.session:
-        del request.session['otp_data']
-        request.session.modified = True
-    
+    request.session.pop('otp_data', None)
+    request.session.modified = True
