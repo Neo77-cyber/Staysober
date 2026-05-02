@@ -85,6 +85,10 @@ def index(request):
     }
     request.session.modified = True
     request.session.save()
+
+    logger.info("SESSION SAVED key=%s data=%s", 
+    request.session.session_key, 
+    list(request.session.keys()))
  
     otp = generate_otp()
     sent, method = send_otp(clean_number, otp, email=email or None)
