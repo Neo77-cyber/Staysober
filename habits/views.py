@@ -117,7 +117,12 @@ def index(request):
 @ratelimit(key="ip", rate="5/m", method="POST", block=True)
 def verify_otp_view(request):
 
-    
+    logger.info(
+        "verify_otp_view hit. Session key: %s, Session contents: %s",
+        request.session.session_key,
+        dict(request.session)
+    )
+
 
     if request.user.is_authenticated:
         return redirect("habit_list")

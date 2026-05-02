@@ -29,7 +29,6 @@ def send_otp(phone_number: str, otp: str, email: str = None) -> tuple[bool, str]
 
 def store_otp(request, phone_number: str, otp: str, method: str = "whatsapp"):
     hashed = hashlib.sha256(otp.encode()).hexdigest()
-    
     expires_at = (timezone.now() + timezone.timedelta(minutes=OTP_EXPIRY_MINUTES)).timestamp()
     request.session['otp_data'] = {
         'otp_hash': hashed,
@@ -39,8 +38,11 @@ def store_otp(request, phone_number: str, otp: str, method: str = "whatsapp"):
         'method': method,
     }
     request.session.modified = True
-    
     request.session.save()
+    
+    
+    logger = logging.getLogger(__name__)
+    logger.info("OTP stored. Session key: %s", request.session.session_key)
 
 
 def verify_otp(request, phone_number: str, submitted_otp: str) -> tuple[bool, str]:
