@@ -636,6 +636,57 @@ VALID_PASS = "ValidPass123!"
 # Index / Registration view
 # ──────────────────────────────────────────────────────────────────────────────
 
+
+class RegressionTests(TestCase):
+    """Tests added after real production bugs"""
+
+    def test_safari_session_cookie_settings(self):
+        """
+        Regression: SESSION_COOKIE_SAMESITE='None' caused Safari mobile
+        to drop the session between registration and OTP verification.
+        Fixed: changed to 'Lax' + added SECURE_PROXY_SSL_HEADER for Render.
+        """
+        from django.conf import settings
+        self.assertEqual(settings.SESSION_COOKIE_SAMESITE, 'Lax')
+        self.assertFalse(settings.SECURE_SSL_REDIRECT)
+        self.assertEqual(
+            settings.SECURE_PROXY_SSL_HEADER,
+            ('HTTP_X_FORWARDED_PROTO', 'https')
+        )
+
+    def test_habit_choice_template_values_match_model_constants(self):
+        """
+        Regression: HTML template had option value='DAILY PRAYERS & BIBLE STUDY'
+        but HABIT_CHOICES key was 'DAILY PRAYERS' — parse_habit returned None
+        and registration silently failed for that option.
+        """
+        from .services.helpers import parse_habit
+        for key, label in Habit.HABIT_CHOICES:
+            with self.subTest(habit=key):
+                name, category = parse_habit({"habit_choice": key.lower()})
+                self.assertIsNotNone(name,
+                    f"'{key}' is not parseable — template option value mismatch")
+
+    @patch("habits.views.send_otp", return_value=(True, "whatsapp"))
+    @patch("habits.views.store_otp")
+    @patch("habits.views.is_ratelimited", return_value=False)
+    def test_session_survives_registration_redirect(self, mock_rl, mock_store, mock_send):
+        """
+        Regression: session data was lost between registration POST and
+        OTP page GET on Safari mobile due to cookie misconfiguration.
+        """
+        response = self.client.post(reverse("index"), {
+            "identifier": "+2348123456789",
+            "password": "ValidPass123!",
+            "habit_choice": Habit.HABIT_CHOICES[0][0].lower(),
+        })
+        self.assertRedirects(response, reverse("verify_otp"))
+
+        response = self.client.get(reverse("verify_otp"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('pending_registration', self.client.session)
+        self.assertIn('otp_data', self.client.session)
+        
 class IndexViewTests(TestCase):
 
     def setUp(self):
@@ -1126,6 +1177,7 @@ class AddHabitViewTests(TestCase):
 class MaintenanceTriggerTests(TestCase):
 
     def setUp(self):
+        self.client = Client(enforce_csrf_checks=True)
         self.client = Client()
         self.url = reverse("maintenance_check")
         self.user = make_user()

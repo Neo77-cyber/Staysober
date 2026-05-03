@@ -279,3 +279,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='')
 DEFAULT_FROM_EMAIL = 'DearSelf <noreply@dearself.app>'
+
+
+
+import sys
+if 'test' in sys.argv:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
