@@ -15,6 +15,7 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 
 from django_ratelimit.decorators import ratelimit
@@ -425,7 +426,7 @@ def banned_view(request):
 # Maintenance Trigger & Gemini Integration
 # ---------------------------------------------------------------------------
 
-
+@csrf_exempt
 @require_POST
 def maintenance_trigger(request):
     key = request.headers.get('X-Maintenance-Key') or request.POST.get('key')
