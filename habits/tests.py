@@ -1224,6 +1224,7 @@ class MaintenanceTriggerTests(TestCase):
         self._post("send_nudges")
         call_args = mock_wa.call_args[0][1]
         self.assertIn("Custom nudge text", call_args)
+        self.assertIn("https://dear-self.onrender.com/habits/", call_args)
 
     # --- generate_nudges ---
 
