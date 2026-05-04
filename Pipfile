@@ -25,6 +25,7 @@ responses = "*"
 coverage = "*"
 sentry-sdk = "*"
 django-prometheus = "*"
+pytest-playwright = "*"
 
 [dev-packages]
 
