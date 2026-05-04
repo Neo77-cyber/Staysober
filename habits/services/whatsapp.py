@@ -35,7 +35,7 @@ def send_whatsapp_message(phone_number: str, message: str) -> bool:
     chat_id = f"{phone_number}@c.us"
     try:
         api = get_green_api()
-        response = api.sending.sendMessage(chat_id, message)
+        response = api.sending.sendMessage(chat_id, message, linkPreview=True)
         if response.code == 200:
             return True
  
