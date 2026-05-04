@@ -530,15 +530,9 @@ def maintenance_trigger(request):
                         f"Streak: {habit.current_streak} days | Misses: {habit.missed_count}/3\n"
                         f"{nudge}"
                     )
-                wa_message = (
-                    f"*{task_type}*\n\n"
-                    + "\n\n".join(habit_blocks)
-                )
 
+                wa_message = f"*{task_type}*\n\n" + "\n\n".join(habit_blocks) + "\n\nhttps://dear-self.onrender.com/habits/"
                 send_whatsapp_message(user.profile.phone_number, wa_message)
-
-
-                send_whatsapp_message(user.profile.phone_number, "https://dear-self.onrender.com/habits/")
                 sent += 1
             except Exception as e:
                 logger.error("Send failed for user %s: %s", user.username, e)
@@ -586,10 +580,8 @@ def maintenance_trigger(request):
                         f"{nudge}"
                     )
 
-                wa_message = "*NIGHT WATCH*\n\n" + "\n\n".join(habit_blocks) 
-                
+                wa_message = "*NIGHT WATCH*\n\n" + "\n\n".join(habit_blocks) + "\n\nhttps://dear-self.onrender.com/habits/"
                 send_whatsapp_message(user.profile.phone_number, wa_message)
-                send_whatsapp_message(user.profile.phone_number, "https://dear-self.onrender.com/habits/")
                 sent += 1
             except Exception as e:
                 logger.error("Night send failed for user %s: %s", user.username, e)
