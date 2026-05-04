@@ -655,15 +655,19 @@ class RegressionTests(TestCase):
         )
 
     def test_habit_choice_template_values_match_model_constants(self):
-        """
-        Regression: HTML template had option value='DAILY PRAYERS & BIBLE STUDY'
-        but HABIT_CHOICES key was 'DAILY PRAYERS' — parse_habit returned None
-        and registration silently failed for that option.
-        """
+    
         from .services.helpers import parse_habit
         for key, label in Habit.HABIT_CHOICES:
             with self.subTest(habit=key):
-                name, category = parse_habit({"habit_choice": key.lower()})
+                if key.upper() == 'CUSTOM':
+                    
+                    name, category = parse_habit({
+                        "habit_choice": key.lower(),
+                        "custom_habit": "Morning run",
+                    })
+                else:
+                    name, category = parse_habit({"habit_choice": key.lower()})
+                
                 self.assertIsNotNone(name,
                     f"'{key}' is not parseable — template option value mismatch")
 
