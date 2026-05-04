@@ -334,26 +334,26 @@ class WhatsAppServiceTests(TestCase):
         from django.core.cache import cache
         cache.delete("green_api_quota_exceeded")
 
-    @patch("habits.services.whatsapp.get_green_api")
-    def test_send_message_success(self, mock_get_api):
-        mock_response = MagicMock(code=200)
-        mock_get_api.return_value.sending.sendMessage.return_value = mock_response
+    @patch("habits.services.whatsapp.requests.post")
+    def test_send_message_success(self, mock_post):
+        mock_post.return_value.status_code = 200
+        mock_post.return_value.json.return_value = {"idMessage": "123"}
         from .services.whatsapp import send_whatsapp_message
         result = send_whatsapp_message("2348000000001", "Hello")
         self.assertTrue(result)
 
-    @patch("habits.services.whatsapp.get_green_api")
-    def test_send_message_non_200_returns_false(self, mock_get_api):
-        mock_response = MagicMock(code=500, data="Server error")
-        mock_get_api.return_value.sending.sendMessage.return_value = mock_response
+    @patch("habits.services.whatsapp.requests.post")
+    def test_send_message_non_200_returns_false(self, mock_post):
+        mock_post.return_value.status_code = 500
+        mock_post.return_value.json.return_value = {}
         from .services.whatsapp import send_whatsapp_message
         result = send_whatsapp_message("2348000000001", "Hello")
         self.assertFalse(result)
 
-    @patch("habits.services.whatsapp.get_green_api")
-    def test_quota_exceeded_marks_cache_and_returns_false(self, mock_get_api):
-        mock_response = MagicMock(code=429, data="quota exceeded")
-        mock_get_api.return_value.sending.sendMessage.return_value = mock_response
+    @patch("habits.services.whatsapp.requests.post")
+    def test_quota_exceeded_marks_cache_and_returns_false(self, mock_post):
+        mock_post.return_value.status_code = 429
+        mock_post.return_value.json.return_value = {}
         from .services.whatsapp import send_whatsapp_message, is_whatsapp_quota_exceeded
         send_whatsapp_message("2348000000001", "Hello")
         self.assertTrue(is_whatsapp_quota_exceeded())
