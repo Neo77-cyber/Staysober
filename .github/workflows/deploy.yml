@@ -58,7 +58,9 @@ jobs:
 
       - name: Run Playwright E2E tests
         env:
-          BASE_URL: https://dear-self.onrender.com  
+          BASE_URL: https://dear-self.onrender.com
+          E2E_TEST_PHONE: ${{ secrets.E2E_TEST_PHONE }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
         run: pytest tests/e2e/ --browser chromium --browser webkit --verbosity=2
 
   deploy:
