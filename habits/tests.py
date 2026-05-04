@@ -687,7 +687,7 @@ class RegressionTests(TestCase):
         self.assertIn('pending_registration', self.client.session)
         self.assertIn('otp_data', self.client.session)      # now actually written
         self.assertIn('otp_method', self.client.session)
-        
+@override_settings(RATELIMIT_ENABLE=False)     
 class IndexViewTests(TestCase):
 
     def setUp(self):
@@ -773,7 +773,7 @@ class IndexViewTests(TestCase):
 # ──────────────────────────────────────────────────────────────────────────────
 # Verify OTP view
 # ──────────────────────────────────────────────────────────────────────────────
-
+@override_settings(RATELIMIT_ENABLE=False)
 class VerifyOTPViewTests(TestCase):
 
     def setUp(self):
@@ -853,7 +853,7 @@ class VerifyOTPViewTests(TestCase):
 # ──────────────────────────────────────────────────────────────────────────────
 # Resend OTP view
 # ──────────────────────────────────────────────────────────────────────────────
-
+@override_settings(RATELIMIT_ENABLE=False)
 class ResendOTPViewTests(TestCase):
 
     def setUp(self):
@@ -899,7 +899,7 @@ class ResendOTPViewTests(TestCase):
 # ──────────────────────────────────────────────────────────────────────────────
 # Login view
 # ──────────────────────────────────────────────────────────────────────────────
-
+@override_settings(RATELIMIT_ENABLE=False)
 class LoginViewTests(TestCase):
 
     def setUp(self):
