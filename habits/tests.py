@@ -672,13 +672,9 @@ class RegressionTests(TestCase):
                     f"'{key}' is not parseable — template option value mismatch")
 
     @patch("habits.views.send_otp", return_value=(True, "whatsapp"))
-    @patch("habits.views.store_otp")
     @patch("habits.views.is_ratelimited", return_value=False)
-    def test_session_survives_registration_redirect(self, mock_rl, mock_store, mock_send):
-        """
-        Regression: session data was lost between registration POST and
-        OTP page GET on Safari mobile due to cookie misconfiguration.
-        """
+    def test_session_survives_registration_redirect(self, mock_rl, mock_send):
+       
         response = self.client.post(reverse("index"), {
             "identifier": "+2348123456789",
             "password": "ValidPass123!",
@@ -689,7 +685,8 @@ class RegressionTests(TestCase):
         response = self.client.get(reverse("verify_otp"))
         self.assertEqual(response.status_code, 200)
         self.assertIn('pending_registration', self.client.session)
-        self.assertIn('otp_data', self.client.session)
+        self.assertIn('otp_data', self.client.session)      # now actually written
+        self.assertIn('otp_method', self.client.session)
         
 class IndexViewTests(TestCase):
 
