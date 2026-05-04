@@ -330,7 +330,6 @@ class SendOTPEmailTests(TestCase):
 class WhatsAppServiceTests(TestCase):
 
     def setUp(self):
-        
         from django.core.cache import cache
         cache.delete("green_api_quota_exceeded")
 
@@ -364,9 +363,9 @@ class WhatsAppServiceTests(TestCase):
         result = send_whatsapp_message("2348000000001", "Hello")
         self.assertFalse(result)
 
-    @patch("habits.services.whatsapp.get_green_api")
-    def test_exception_with_quota_keyword_marks_exhausted(self, mock_get_api):
-        mock_get_api.return_value.sending.sendMessage.side_effect = Exception("quota limit reached")
+    @patch("habits.services.whatsapp.requests.post")
+    def test_exception_with_quota_keyword_marks_exhausted(self, mock_post):
+        mock_post.side_effect = Exception("quota limit reached")
         from .services.whatsapp import send_whatsapp_message, is_whatsapp_quota_exceeded
         send_whatsapp_message("2348000000001", "Hello")
         self.assertTrue(is_whatsapp_quota_exceeded())
@@ -375,7 +374,6 @@ class WhatsAppServiceTests(TestCase):
     def test_send_otp_whatsapp_includes_otp_in_message(self, mock_send):
         from .services.whatsapp import send_otp_whatsapp
         send_otp_whatsapp("2348000000001", "999111", 15)
-        _, kwargs = mock_send.call_args
         message = mock_send.call_args[0][1]
         self.assertIn("999111", message)
 
