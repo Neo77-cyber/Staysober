@@ -62,11 +62,6 @@ class Habit(models.Model):
     def __str__(self):
         return f"{self.name} ({self.user.username})"
     
-    
-
-    # ------------------------------------------------------------------
-    # Properties
-    # ------------------------------------------------------------------
 
     @property
     def marked_today(self) -> bool:
@@ -75,27 +70,17 @@ class Habit(models.Model):
 
     @property
     def missed_yesterday(self) -> bool:
-        """
-        True if the user neither marked yesterday nor today,
-        meaning they have an unresolved miss from yesterday.
-        Only relevant for habits that have been started (last_marked_date set).
-        """
+    
         if self.last_marked_date is None:
             return False
         today = timezone.localdate()
         yesterday = today - timezone.timedelta(days=1)
-        # They missed if last mark was before yesterday
+        
         return self.last_marked_date < yesterday
 
-    # ------------------------------------------------------------------
-    # Business logic
-    # ------------------------------------------------------------------
 
     def mark_done(self) -> dict:
-        """
-        Mark today's habit as done.
-        Returns a result dict consumed by the view/JS.
-        """
+        
         today = timezone.localdate()
 
         if self.marked_today:
@@ -132,11 +117,7 @@ class Habit(models.Model):
         }
 
     def record_miss(self) -> dict:
-        """
-        Call this at midnight (via a management command / cron) when a user
-        did not mark a habit yesterday. Also callable manually.
-        Returns a dict describing what happened including if the user is banned.
-        """
+        
         self.missed_count += 1
         self.current_streak = 0
 

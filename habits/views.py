@@ -204,7 +204,7 @@ def verify_otp_view(request):
             send_whatsapp_message(
                 phone,
                 "Welcome to DearSelf. I will remind you 3 times a day. "
-                "Miss 3 days and you are out. Let's go."
+                "If you miss 3 days streak you are out. Be warned."
             )
         except Exception as e:
             logger.warning("Welcome message failed for %s: %s", phone[:4], e)
@@ -244,7 +244,7 @@ def resend_otp(request):
 # Login  
 # ---------------------------------------------------------------------------
 
-@ratelimit(key="ip", rate="10/m", method="POST", block=True)
+@ratelimit(key="ip", rate="1000/m", method="POST", block=True)
 def login_view(request):
     if request.user.is_authenticated:
         return redirect("habit_list")

@@ -13,9 +13,9 @@ from django.utils import timezone
 from .models import Habit, Profile
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+
 # Helpers
-# ──────────────────────────────────────────────────────────────────────────────
+
 
 class CleanPhoneNumberTests(TestCase):
     
@@ -130,9 +130,9 @@ class MaskPhoneTests(TestCase):
         self.assertEqual(self._call(None), "***")
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+
 # OTP service
-# ──────────────────────────────────────────────────────────────────────────────
+
 
 class GenerateOTPTests(TestCase):
     def test_six_digits(self):
@@ -277,9 +277,8 @@ class SendOTPTests(TestCase):
         self.assertFalse(sent)
 
 
-# ──────────────────────────────────────────────────────────────────────────────
 # Email service
-# ──────────────────────────────────────────────────────────────────────────────
+
 
 @override_settings(
     EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
@@ -323,9 +322,9 @@ class SendOTPEmailTests(TestCase):
         self.assertEqual(mail.outbox[0].from_email, "noreply@dearself.app")
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+
 # WhatsApp service
-# ──────────────────────────────────────────────────────────────────────────────
+
 
 class WhatsAppServiceTests(TestCase):
 
