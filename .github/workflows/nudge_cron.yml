@@ -3,10 +3,10 @@ name: Scheduled Habit Jobs
 
 on:
   schedule:
-    - cron: '0 3 * * *'   # Generate nudges — 4 AM WAT (3 AM UTC)
-    - cron: '0 6 * * *'   # Morning reminder — 7 AM WAT (6 AM UTC)
-    - cron: '0 13 * * *'  # Afternoon reminder + nudge regen — 2 PM WAT (1 PM UTC)
-    - cron: '0 20 * * *'  # Night watch — 9 PM WAT (8 PM UTC)
+    - cron: '0 3 * * *'   
+    - cron: '0 6 * * *'   
+    - cron: '0 12 * * *'  
+    - cron: '0 19 * * *'  
 
   workflow_dispatch:
     inputs:
@@ -21,10 +21,7 @@ on:
           - night_watch
 
 jobs:
-  # ----------------------------------------------------------------
-  # Generate nudges — hits Gemini API slowly, stores in DB
-  # Runs at 3 AM and 1 PM UTC
-  # ----------------------------------------------------------------
+  
   generate-nudges:
     name: Generate AI Nudges
     runs-on: ubuntu-latest
@@ -65,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'afternoon_reminder') ||
-      github.event.schedule == '0 13 * * *'
+      github.event.schedule == '0 12 * * *'
     steps:
       - name: Trigger afternoon nudge
         run: |
@@ -82,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'night_watch') ||
-      github.event.schedule == '0 20 * * *'
+      github.event.schedule == '0 19 * * *'
     steps:
       - name: Trigger night watch
         run: |

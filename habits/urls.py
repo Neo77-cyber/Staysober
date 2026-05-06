@@ -14,7 +14,7 @@ urlpatterns = [
     path("banned/",                   views.banned_view,     name="banned"),
     path('maintenance_trigger/', views.maintenance_trigger, name='maintenance_check'),
     path("health/", views.health_check, name="health_check"),
-    path('debug/clear-test-lockout/', views.clear_test_lockout, name='clear_test_lockout'),
+    
    
     
     

@@ -87,9 +87,7 @@ def index(request):
     request.session.modified = True
     request.session.save()
 
-    logger.info("SESSION SAVED key=%s data=%s", 
-    request.session.session_key, 
-    list(request.session.keys()))
+    
  
     otp = generate_otp()
     sent, method = send_otp(clean_number, otp, email=email or None)
@@ -122,11 +120,7 @@ def index(request):
 @ratelimit(key="ip", rate="5/m", method="POST", block=True)
 def verify_otp_view(request):
 
-    logger.info(
-        "verify_otp_view hit. Session key: %s, Session contents: %s",
-        request.session.session_key,
-        dict(request.session)
-    )
+    
 
 
     if request.user.is_authenticated:
@@ -244,7 +238,7 @@ def resend_otp(request):
 # Login  
 # ---------------------------------------------------------------------------
 
-@ratelimit(key="ip", rate="1000/m", method="POST", block=True)
+@ratelimit(key="ip", rate="10/m", method="POST", block=True)
 def login_view(request):
     if request.user.is_authenticated:
         return redirect("habit_list")
@@ -348,7 +342,7 @@ def habit_list(request):
 
 @login_required
 @require_POST
-@ratelimit(key="user", rate="30/m", method="POST", block=True)
+@ratelimit(key="user", rate="15/m", method="POST", block=True)
 def mark_habit_done(request, habit_id):
     if banned_check(request.user):
         logout(request)
@@ -612,24 +606,3 @@ def maintenance_trigger(request):
 def health_check(request):
     return HttpResponse("ok", status=200)
 
-
-@require_POST  # change to GET so playwright can hit it easily
-@csrf_exempt
-def clear_test_lockout(request):
-    """Only usable with maintenance key. Clears axes lockout for test account."""
-    import hmac
-    from axes.models import AccessAttempt
-
-    key = request.headers.get('X-Maintenance-Key', '')
-    if not key or not hmac.compare_digest(key, settings.MAINTENANCE_KEY):
-        return JsonResponse({'error': 'Unauthorized'}, status=401)
-
-    test_phone = os.environ.get('E2E_TEST_PHONE', '')
-    if not test_phone:
-        return JsonResponse({'error': 'No test phone configured'}, status=400)
-
-    deleted, _ = AccessAttempt.objects.filter(
-        username__contains=test_phone
-    ).delete()
-
-    return JsonResponse({'cleared': deleted})
