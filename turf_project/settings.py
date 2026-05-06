@@ -201,7 +201,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://dear-self.onrender.com",
 ]
 
-AXES_FAILURE_LIMIT = 10
+AXES_FAILURE_LIMIT = 1000
 AXES_COOLOFF_TIME = 0.30
 AXES_LOCKOUT_TEMPLATE = 'habits/lockout.html'
 
