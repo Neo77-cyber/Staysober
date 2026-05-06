@@ -281,3 +281,7 @@ RESEND_API_KEY = env('RESEND_API_KEY', default='')
 import sys
 if 'test' in sys.argv:
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+
+if os.environ.get('E2E_TESTING', 'False') == 'True':
+    AXES_ENABLED = False
