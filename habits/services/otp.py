@@ -41,8 +41,7 @@ def store_otp(request, phone_number: str, otp: str, method: str = "whatsapp"):
     request.session.save()
     
     
-    logger = logging.getLogger(__name__)
-    logger.info("OTP stored. Session key: %s", request.session.session_key)
+    
 
 
 def verify_otp(request, phone_number: str, submitted_otp: str) -> tuple[bool, str]:

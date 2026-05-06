@@ -1,4 +1,4 @@
-# .github/workflows/scheduled_jobs.yml
+
 name: Scheduled Habit Jobs
 
 on:
@@ -37,9 +37,7 @@ jobs:
             -H "X-Maintenance-Key: ${{ secrets.MAINTENANCE_KEY }}" \
             "${{ secrets.APP_URL }}/maintenance_trigger/?task=generate_nudges"
 
-  # ----------------------------------------------------------------
-  # Morning reminder — 7 AM WAT
-  # ----------------------------------------------------------------
+
   morning-reminder:
     name: Morning Reminder
     runs-on: ubuntu-latest
@@ -54,9 +52,7 @@ jobs:
             -H "X-Maintenance-Key: ${{ secrets.MAINTENANCE_KEY }}" \
             "${{ secrets.APP_URL }}/maintenance_trigger/?task=send_nudges"
 
-  # ----------------------------------------------------------------
-  # Afternoon reminder — 2 PM WAT
-  # ----------------------------------------------------------------
+
   afternoon-reminder:
     name: Afternoon Reminder
     runs-on: ubuntu-latest
@@ -71,9 +67,7 @@ jobs:
             -H "X-Maintenance-Key: ${{ secrets.MAINTENANCE_KEY }}" \
             "${{ secrets.APP_URL }}/maintenance_trigger/?task=send_nudges"
 
-  # ----------------------------------------------------------------
-  # Night watch — 9 PM WAT (also records misses)
-  # ----------------------------------------------------------------
+
   night-watch:
     name: Night Watch
     runs-on: ubuntu-latest

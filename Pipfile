@@ -26,6 +26,7 @@ coverage = "*"
 sentry-sdk = "*"
 django-prometheus = "*"
 pytest-playwright = "*"
+black = "*"
 
 [dev-packages]
 
