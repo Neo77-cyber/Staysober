@@ -287,7 +287,7 @@ from django.core import mail
 
 @override_settings(
     RESEND_API_KEY="test_key_123",
-    DEFAULT_FROM_EMAIL="noreply@dearself.app",
+    DEFAULT_FROM_EMAIL="support@retechloans.com",
 )
 class SendOTPEmailTests(TestCase):
 
@@ -359,7 +359,7 @@ class SendOTPEmailTests(TestCase):
         self._call("user@example.com", "123456")
         
         call_args = mock_post.call_args[1]
-        self.assertEqual(call_args["json"]["from"], "DearSelf <noreply@dearself.app>")
+        self.assertEqual(call_args["json"]["from"], "DearSelf <support@retechloans.com>")
 
     @patch("habits.services.email_service.requests.post")
     def test_subject_is_correct(self, mock_post):
