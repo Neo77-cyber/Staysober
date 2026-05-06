@@ -6,6 +6,14 @@ from django.dispatch import receiver
 from django.core.validators import RegexValidator
 
 
+def get_logical_date():
+    
+    now = timezone.localtime()  
+    if now.hour < 6:
+        return (now - timezone.timedelta(days=1)).date()
+    return now.date()
+
+
 class Profile(models.Model):
     phone_regex = RegexValidator(
         regex=r'^234\d{10}$',
@@ -28,15 +36,15 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class Habit(models.Model):
     HABIT_CHOICES = [
-    ('DAILY PRAYERS', 'Daily Prayers'),
-    ('WORK OUT', 'Work Out'),
-    ('EXAM PREPARATION', 'Exam Preparation'),
-    ('GAMBLING', 'Gambling'),
-    ('WEED SOBER', 'Weed Sober'),
-    ('LATE NIGHT EATING', 'Late Night Eating'),
-    ('BUY BUY', 'Buy Buy'),
-    ('ALCOHOL SOBER', 'Alcohol Sober'),
-    ('CUSTOM', 'Custom Habit'),
+        ('DAILY PRAYERS', 'Daily Prayers'),
+        ('WORK OUT', 'Work Out'),
+        ('EXAM PREPARATION', 'Exam Preparation'),
+        ('GAMBLING', 'Gambling'),
+        ('WEED SOBER', 'Weed Sober'),
+        ('LATE NIGHT EATING', 'Late Night Eating'),
+        ('BUY BUY', 'Buy Buy'),
+        ('ALCOHOL SOBER', 'Alcohol Sober'),
+        ('CUSTOM', 'Custom Habit'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="habits")
@@ -45,10 +53,9 @@ class Habit(models.Model):
     goal = models.CharField(max_length=255, default="Daily")
     created_at = models.DateTimeField(auto_now_add=True)
 
-    
     current_streak = models.PositiveIntegerField(default=0)
     longest_streak = models.PositiveIntegerField(default=0)
-    missed_count = models.PositiveIntegerField(default=0)   
+    missed_count = models.PositiveIntegerField(default=0)
     last_marked_date = models.DateField(null=True, blank=True)
     cached_nudge = models.TextField(null=True, blank=True)
     nudge_generated_at = models.DateTimeField(null=True, blank=True)
@@ -61,34 +68,28 @@ class Habit(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"
-    
 
     @property
     def marked_today(self) -> bool:
-        today = timezone.localdate()
-        return self.last_marked_date == today
+        return self.last_marked_date == get_logical_date()
 
     @property
     def missed_yesterday(self) -> bool:
-    
         if self.last_marked_date is None:
             return False
-        today = timezone.localdate()
+        today = get_logical_date()
         yesterday = today - timezone.timedelta(days=1)
-        
         return self.last_marked_date < yesterday
 
-
     def mark_done(self) -> dict:
-        
-        today = timezone.localdate()
+        today = get_logical_date()
 
-        if self.marked_today:
-            return {"status": "already_done"}
+        if self.last_marked_date == today:
+            return {"status": "already_done", "current_streak": self.current_streak}
 
         yesterday = today - timezone.timedelta(days=1)
+
         if self.last_marked_date == yesterday:
-            
             self.current_streak += 1
         else:
             
@@ -99,15 +100,13 @@ class Habit(models.Model):
 
         self.last_marked_date = today
 
-        
         DailyRecord.objects.update_or_create(
             habit=self, date=today,
             defaults={"completed": True}
         )
 
         self.save(update_fields=[
-            "current_streak", "longest_streak",
-            "last_marked_date"
+            "current_streak", "longest_streak", "last_marked_date"
         ])
 
         return {
@@ -117,13 +116,16 @@ class Habit(models.Model):
         }
 
     def record_miss(self) -> dict:
-        
         self.missed_count += 1
         self.current_streak = 0
+        
+        today = get_logical_date()
+        yesterday = today - timezone.timedelta(days=1)
+        self.last_marked_date = yesterday
 
         DailyRecord.objects.update_or_create(
             habit=self,
-            date=timezone.localdate() - timezone.timedelta(days=1),
+            date=yesterday,
             defaults={"completed": False}
         )
 
@@ -134,7 +136,7 @@ class Habit(models.Model):
             user.save(update_fields=["is_active"])
             banned = True
 
-        self.save(update_fields=["missed_count", "current_streak"])
+        self.save(update_fields=["missed_count", "current_streak", "last_marked_date"])
 
         return {
             "status": "banned" if banned else "missed",

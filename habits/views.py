@@ -496,7 +496,7 @@ def maintenance_trigger(request):
         logger.info(summary)
         return HttpResponse(summary, content_type="text/plain")
     
-    DASHBOARD_URL = "https://dear-self.onrender.com/habits/"
+    
 
 
     if task == 'send_nudges':
@@ -539,13 +539,18 @@ def maintenance_trigger(request):
 
         return HttpResponse(f"Sent to {sent}/{len(user_habits)} users.")
     if task == 'night_watch':
-        today = now.date()
-        yesterday = today - timezone.timedelta(days=1)
 
-        
+        now = timezone.localtime()
+        if now.hour < 6:
+            logical_today = (now - timezone.timedelta(days=1)).date()
+        else:
+            logical_today = now.date()
+
+        yesterday = logical_today - timezone.timedelta(days=1)
+
         stale_habits = list(
             Habit.objects
-            .filter(user__is_active=True, last_marked_date__lt=yesterday)
+            .filter(user__is_active=True, last_marked_date__lt=logical_today)
             .exclude(last_marked_date=None)
             .select_related('user__profile')
         )
@@ -608,10 +613,23 @@ def health_check(request):
     return HttpResponse("ok", status=200)
 
 
-def session_debug(request):
-    return JsonResponse({
-        'session_key': request.session.session_key,
-        'session_exists': bool(request.session.session_key),
-        'has_pending': 'pending_registration' in request.session,
-        'session_engine': request.session.__class__.__module__,
-    })
+@require_POST  # change to GET so playwright can hit it easily
+@csrf_exempt
+def clear_test_lockout(request):
+    """Only usable with maintenance key. Clears axes lockout for test account."""
+    import hmac
+    from axes.models import AccessAttempt
+
+    key = request.headers.get('X-Maintenance-Key', '')
+    if not key or not hmac.compare_digest(key, settings.MAINTENANCE_KEY):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    test_phone = os.environ.get('E2E_TEST_PHONE', '')
+    if not test_phone:
+        return JsonResponse({'error': 'No test phone configured'}, status=400)
+
+    deleted, _ = AccessAttempt.objects.filter(
+        username__contains=test_phone
+    ).delete()
+
+    return JsonResponse({'cleared': deleted})
