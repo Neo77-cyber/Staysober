@@ -7,8 +7,8 @@ from django.core.validators import RegexValidator
 
 
 def get_logical_date():
-    
-    now = timezone.localtime()  
+
+    now = timezone.localtime()
     if now.hour < 6:
         return (now - timezone.timedelta(days=1)).date()
     return now.date()
@@ -16,12 +16,14 @@ def get_logical_date():
 
 class Profile(models.Model):
     phone_regex = RegexValidator(
-        regex=r'^234\d{10}$',
-        message="Phone number must be entered in the format: '2348123456789'."
+        regex=r"^234\d{10}$",
+        message="Phone number must be entered in the format: '2348123456789'.",
     )
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    phone_number = models.CharField(validators=[phone_regex], max_length=13, unique=True)
-    timezone = models.CharField(max_length=50, default='Africa/Lagos')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    phone_number = models.CharField(
+        validators=[phone_regex], max_length=13, unique=True
+    )
+    timezone = models.CharField(max_length=50, default="Africa/Lagos")
     is_whatsapp_verified = models.BooleanField(default=False)
 
     def __str__(self):
@@ -36,20 +38,20 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class Habit(models.Model):
     HABIT_CHOICES = [
-        ('DAILY PRAYERS', 'Daily Prayers'),
-        ('WORK OUT', 'Work Out'),
-        ('EXAM PREPARATION', 'Exam Preparation'),
-        ('GAMBLING', 'Gambling'),
-        ('WEED SOBER', 'Weed Sober'),
-        ('LATE NIGHT EATING', 'Late Night Eating'),
-        ('BUY BUY', 'Buy Buy'),
-        ('ALCOHOL SOBER', 'Alcohol Sober'),
-        ('CUSTOM', 'Custom Habit'),
+        ("DAILY PRAYERS", "Daily Prayers"),
+        ("WORK OUT", "Work Out"),
+        ("EXAM PREPARATION", "Exam Preparation"),
+        ("GAMBLING", "Gambling"),
+        ("WEED SOBER", "Weed Sober"),
+        ("LATE NIGHT EATING", "Late Night Eating"),
+        ("BUY BUY", "Buy Buy"),
+        ("ALCOHOL SOBER", "Alcohol Sober"),
+        ("CUSTOM", "Custom Habit"),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="habits")
     name = models.CharField(max_length=255)
-    category = models.CharField(max_length=225, choices=HABIT_CHOICES, default='CUSTOM')
+    category = models.CharField(max_length=225, choices=HABIT_CHOICES, default="CUSTOM")
     goal = models.CharField(max_length=255, default="Daily")
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -62,8 +64,8 @@ class Habit(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['user', 'last_marked_date']),
-            models.Index(fields=['user']),
+            models.Index(fields=["user", "last_marked_date"]),
+            models.Index(fields=["user"]),
         ]
 
     def __str__(self):
@@ -92,7 +94,7 @@ class Habit(models.Model):
         if self.last_marked_date == yesterday:
             self.current_streak += 1
         else:
-            
+
             self.current_streak = 1
 
         if self.current_streak > self.longest_streak:
@@ -101,13 +103,12 @@ class Habit(models.Model):
         self.last_marked_date = today
 
         DailyRecord.objects.update_or_create(
-            habit=self, date=today,
-            defaults={"completed": True}
+            habit=self, date=today, defaults={"completed": True}
         )
 
-        self.save(update_fields=[
-            "current_streak", "longest_streak", "last_marked_date"
-        ])
+        self.save(
+            update_fields=["current_streak", "longest_streak", "last_marked_date"]
+        )
 
         return {
             "status": "success",
@@ -118,15 +119,13 @@ class Habit(models.Model):
     def record_miss(self) -> dict:
         self.missed_count += 1
         self.current_streak = 0
-        
+
         today = get_logical_date()
         yesterday = today - timezone.timedelta(days=1)
         self.last_marked_date = yesterday
 
         DailyRecord.objects.update_or_create(
-            habit=self,
-            date=yesterday,
-            defaults={"completed": False}
+            habit=self, date=yesterday, defaults={"completed": False}
         )
 
         banned = False
@@ -150,7 +149,7 @@ class DailyRecord(models.Model):
     completed = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ['habit', 'date']
+        unique_together = ["habit", "date"]
 
     def __str__(self):
         return f"{self.habit.name} on {self.date}"

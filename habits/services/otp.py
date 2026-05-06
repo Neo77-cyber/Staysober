@@ -29,41 +29,40 @@ def send_otp(phone_number: str, otp: str, email: str = None) -> tuple[bool, str]
 
 def store_otp(request, phone_number: str, otp: str, method: str = "whatsapp"):
     hashed = hashlib.sha256(otp.encode()).hexdigest()
-    expires_at = (timezone.now() + timezone.timedelta(minutes=OTP_EXPIRY_MINUTES)).timestamp()
-    request.session['otp_data'] = {
-        'otp_hash': hashed,
-        'phone': phone_number,
-        'expires_at': expires_at,
-        'attempts': 0,
-        'method': method,
+    expires_at = (
+        timezone.now() + timezone.timedelta(minutes=OTP_EXPIRY_MINUTES)
+    ).timestamp()
+    request.session["otp_data"] = {
+        "otp_hash": hashed,
+        "phone": phone_number,
+        "expires_at": expires_at,
+        "attempts": 0,
+        "method": method,
     }
     request.session.modified = True
     request.session.save()
-    
-    
-    
 
 
 def verify_otp(request, phone_number: str, submitted_otp: str) -> tuple[bool, str]:
-    data = request.session.get('otp_data')
+    data = request.session.get("otp_data")
     if not data:
         return False, "Session expired. Please register again."
-    if data.get('phone') != phone_number:
+    if data.get("phone") != phone_number:
         return False, "Phone number mismatch. Please start again."
-    
-    if timezone.now().timestamp() > data['expires_at']:
+
+    if timezone.now().timestamp() > data["expires_at"]:
         clear_otp(request)
         return False, "OTP has expired. Please request a new one."
-    if data.get('attempts', 0) >= OTP_MAX_ATTEMPTS:
+    if data.get("attempts", 0) >= OTP_MAX_ATTEMPTS:
         clear_otp(request)
         return False, "Too many failed attempts. Please start again."
 
     submitted_hash = hashlib.sha256(submitted_otp.strip().encode()).hexdigest()
-    if data['otp_hash'] != submitted_hash:
-        data['attempts'] = data.get('attempts', 0) + 1
-        request.session['otp_data'] = data
+    if data["otp_hash"] != submitted_hash:
+        data["attempts"] = data.get("attempts", 0) + 1
+        request.session["otp_data"] = data
         request.session.modified = True
-        remaining = OTP_MAX_ATTEMPTS - data['attempts']
+        remaining = OTP_MAX_ATTEMPTS - data["attempts"]
         return False, f"Wrong code. {remaining} attempt(s) left."
 
     clear_otp(request)
@@ -71,5 +70,5 @@ def verify_otp(request, phone_number: str, submitted_otp: str) -> tuple[bool, st
 
 
 def clear_otp(request):
-    request.session.pop('otp_data', None)
+    request.session.pop("otp_data", None)
     request.session.modified = True

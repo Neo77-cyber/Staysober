@@ -1,4 +1,3 @@
-
 import hashlib
 import json
 from datetime import timedelta
@@ -13,15 +12,14 @@ from django.utils import timezone
 from .models import Habit, Profile
 
 
-
 # Helpers
 
 
 class CleanPhoneNumberTests(TestCase):
-    
 
     def _call(self, raw):
         from .services.helpers import clean_phone_number
+
         return clean_phone_number(raw)
 
     def test_valid_nigerian_number_with_country_code(self):
@@ -29,7 +27,7 @@ class CleanPhoneNumberTests(TestCase):
         self.assertEqual(result, "2348123456789")
 
     def test_valid_nigerian_number_local_format(self):
-        
+
         result = self._call("08123456789")
         self.assertEqual(result, "2348123456789")
 
@@ -52,10 +50,10 @@ class CleanPhoneNumberTests(TestCase):
 
 
 class ParseHabitTests(TestCase):
-   
 
     def _call(self, post_data):
         from .services.helpers import parse_habit
+
         return parse_habit(post_data)
 
     def test_known_habit_choice_returns_name_and_category(self):
@@ -66,7 +64,9 @@ class ParseHabitTests(TestCase):
         self.assertEqual(cat, first_key.upper())
 
     def test_custom_habit_with_name(self):
-        name, cat = self._call({"habit_choice": "custom", "custom_habit": "Morning run"})
+        name, cat = self._call(
+            {"habit_choice": "custom", "custom_habit": "Morning run"}
+        )
         self.assertEqual(name, "Morning run")
         self.assertEqual(cat, "CUSTOM")
 
@@ -92,10 +92,10 @@ class ParseHabitTests(TestCase):
 
 
 class BannedCheckTests(TestCase):
-    
 
     def _call(self, user):
         from .services.helpers import banned_check
+
         return banned_check(user)
 
     def test_active_user_not_banned(self):
@@ -108,10 +108,10 @@ class BannedCheckTests(TestCase):
 
 
 class MaskPhoneTests(TestCase):
-   
 
     def _call(self, phone):
         from .services.helpers import mask_phone
+
         return mask_phone(phone)
 
     def test_normal_phone_masked(self):
@@ -130,19 +130,20 @@ class MaskPhoneTests(TestCase):
         self.assertEqual(self._call(None), "***")
 
 
-
 # OTP service
 
 
 class GenerateOTPTests(TestCase):
     def test_six_digits(self):
         from .services.otp import generate_otp
+
         otp = generate_otp()
         self.assertEqual(len(otp), 6)
         self.assertTrue(otp.isdigit())
 
     def test_range(self):
         from .services.otp import generate_otp
+
         for _ in range(20):
             val = int(generate_otp())
             self.assertGreaterEqual(val, 100000)
@@ -150,8 +151,9 @@ class GenerateOTPTests(TestCase):
 
     def test_uniqueness(self):
         from .services.otp import generate_otp
+
         otps = {generate_otp() for _ in range(50)}
-        
+
         self.assertGreater(len(otps), 1)
 
 
@@ -159,16 +161,19 @@ class StoreAndVerifyOTPTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.request = self.factory.get("/")
-        
+
         from django.contrib.sessions.backends.db import SessionStore
+
         self.request.session = SessionStore()
 
     def _store(self, phone, otp, method="whatsapp"):
         from .services.otp import store_otp
+
         store_otp(self.request, phone, otp, method=method)
 
     def _verify(self, phone, submitted):
         from .services.otp import verify_otp
+
         return verify_otp(self.request, phone, submitted)
 
     def test_correct_otp_succeeds(self):
@@ -185,9 +190,10 @@ class StoreAndVerifyOTPTests(TestCase):
 
     def test_expired_otp_fails(self):
         from .services.otp import store_otp, OTP_EXPIRY_MINUTES
+
         store_otp(self.request, "2348000000001", "123456")
-        
-        self.request.session['otp_data']['expires_at'] = (
+
+        self.request.session["otp_data"]["expires_at"] = (
             timezone.now() - timedelta(seconds=1)
         ).timestamp()
         valid, msg = self._verify("2348000000001", "123456")
@@ -207,6 +213,7 @@ class StoreAndVerifyOTPTests(TestCase):
 
     def test_max_attempts_locks_out(self):
         from .services.otp import OTP_MAX_ATTEMPTS
+
         self._store("2348000000001", "123456")
         for _ in range(OTP_MAX_ATTEMPTS):
             self._verify("2348000000001", "000000")
@@ -215,19 +222,21 @@ class StoreAndVerifyOTPTests(TestCase):
 
     def test_remaining_attempts_count_decrements(self):
         from .services.otp import OTP_MAX_ATTEMPTS
+
         self._store("2348000000001", "123456")
         _, msg = self._verify("2348000000001", "000000")
         self.assertIn(str(OTP_MAX_ATTEMPTS - 1), msg)
 
     def test_clear_otp_removes_session_data(self):
         from .services.otp import clear_otp
+
         self._store("2348000000001", "123456")
         clear_otp(self.request)
-        self.assertNotIn('otp_data', self.request.session)
+        self.assertNotIn("otp_data", self.request.session)
 
     def test_otp_hashed_not_stored_plaintext(self):
         self._store("2348000000001", "123456")
-        stored = self.request.session['otp_data']['otp_hash']
+        stored = self.request.session["otp_data"]["otp_hash"]
         self.assertNotEqual(stored, "123456")
         self.assertEqual(stored, hashlib.sha256("123456".encode()).hexdigest())
 
@@ -235,11 +244,11 @@ class StoreAndVerifyOTPTests(TestCase):
 class SendOTPTests(TestCase):
 
     def _send_otp(self, phone, otp, email=None):
-        
+
         import habits.services.otp as otp_module
-        
-        fn = getattr(otp_module.send_otp, '__wrapped__', otp_module.send_otp)
-        
+
+        fn = getattr(otp_module.send_otp, "__wrapped__", otp_module.send_otp)
+
         return fn(phone, otp, email)
 
     @patch("habits.services.otp.is_whatsapp_quota_exceeded", return_value=False)
@@ -251,16 +260,24 @@ class SendOTPTests(TestCase):
 
     @patch("habits.services.otp.is_whatsapp_quota_exceeded", return_value=True)
     @patch("habits.services.otp.send_otp_email", return_value=True)
-    def test_falls_back_to_email_when_whatsapp_quota_exceeded(self, mock_email, mock_quota):
-        sent, method = self._send_otp("2348000000001", "123456", email="user@example.com")
+    def test_falls_back_to_email_when_whatsapp_quota_exceeded(
+        self, mock_email, mock_quota
+    ):
+        sent, method = self._send_otp(
+            "2348000000001", "123456", email="user@example.com"
+        )
         self.assertTrue(sent)
         self.assertEqual(method, "email")
 
     @patch("habits.services.otp.is_whatsapp_quota_exceeded", return_value=False)
     @patch("habits.services.otp.send_otp_whatsapp", return_value=False)
     @patch("habits.services.otp.send_otp_email", return_value=True)
-    def test_falls_back_to_email_when_whatsapp_send_fails(self, mock_email, mock_wa, mock_quota):
-        sent, method = self._send_otp("2348000000001", "123456", email="user@example.com")
+    def test_falls_back_to_email_when_whatsapp_send_fails(
+        self, mock_email, mock_wa, mock_quota
+    ):
+        sent, method = self._send_otp(
+            "2348000000001", "123456", email="user@example.com"
+        )
         self.assertTrue(sent)
         self.assertEqual(method, "email")
 
@@ -293,6 +310,7 @@ class SendOTPEmailTests(TestCase):
 
     def _call(self, email, otp, expiry=15):
         from .services.email_service import send_otp_email
+
         return send_otp_email(email, otp, expiry)
 
     @patch("habits.services.email_service.requests.post")
@@ -300,7 +318,7 @@ class SendOTPEmailTests(TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
-        
+
         result = self._call("test@example.com", "654321")
         self.assertTrue(result)
 
@@ -309,9 +327,9 @@ class SendOTPEmailTests(TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
-        
+
         self._call("user@example.com", "777888")
-        
+
         mock_post.assert_called_once()
         args, kwargs = mock_post.call_args
         self.assertEqual(args[0], "https://api.resend.com/emails")
@@ -324,9 +342,9 @@ class SendOTPEmailTests(TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
-        
+
         self._call("user@example.com", "777888")
-        
+
         call_args = mock_post.call_args[1]
         html_body = call_args["json"]["html"]
         text_body = call_args["json"]["text"]
@@ -339,14 +357,14 @@ class SendOTPEmailTests(TestCase):
         mock_response.status_code = 400
         mock_response.text = "Invalid email"
         mock_post.return_value = mock_response
-        
+
         result = self._call("bad@example.com", "000000")
         self.assertFalse(result)
 
     @patch("habits.services.email_service.requests.post")
     def test_returns_false_on_exception(self, mock_post):
         mock_post.side_effect = Exception("Network error")
-        
+
         result = self._call("test@example.com", "123456")
         self.assertFalse(result)
 
@@ -355,23 +373,26 @@ class SendOTPEmailTests(TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
-        
+
         self._call("user@example.com", "123456")
-        
+
         call_args = mock_post.call_args[1]
-        self.assertEqual(call_args["json"]["from"], "DearSelf <support@retechloans.com>")
+        self.assertEqual(
+            call_args["json"]["from"], "DearSelf <support@retechloans.com>"
+        )
 
     @patch("habits.services.email_service.requests.post")
     def test_subject_is_correct(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
-        
-        self._call("user@example.com", "123456")
-        
-        call_args = mock_post.call_args[1]
-        self.assertEqual(call_args["json"]["subject"], "Your DearSelf verification code")
 
+        self._call("user@example.com", "123456")
+
+        call_args = mock_post.call_args[1]
+        self.assertEqual(
+            call_args["json"]["subject"], "Your DearSelf verification code"
+        )
 
 
 # WhatsApp service
@@ -381,6 +402,7 @@ class WhatsAppServiceTests(TestCase):
 
     def setUp(self):
         from django.core.cache import cache
+
         cache.delete("green_api_quota_exceeded")
 
     @patch("habits.services.whatsapp.requests.post")
@@ -388,6 +410,7 @@ class WhatsAppServiceTests(TestCase):
         mock_post.return_value.status_code = 200
         mock_post.return_value.json.return_value = {"idMessage": "123"}
         from .services.whatsapp import send_whatsapp_message
+
         result = send_whatsapp_message("2348000000001", "Hello")
         self.assertTrue(result)
 
@@ -396,6 +419,7 @@ class WhatsAppServiceTests(TestCase):
         mock_post.return_value.status_code = 500
         mock_post.return_value.json.return_value = {}
         from .services.whatsapp import send_whatsapp_message
+
         result = send_whatsapp_message("2348000000001", "Hello")
         self.assertFalse(result)
 
@@ -404,12 +428,14 @@ class WhatsAppServiceTests(TestCase):
         mock_post.return_value.status_code = 429
         mock_post.return_value.json.return_value = {}
         from .services.whatsapp import send_whatsapp_message, is_whatsapp_quota_exceeded
+
         send_whatsapp_message("2348000000001", "Hello")
         self.assertTrue(is_whatsapp_quota_exceeded())
 
     @patch("habits.services.whatsapp.is_whatsapp_quota_exceeded", return_value=True)
     def test_skips_send_when_quota_active(self, mock_quota):
         from .services.whatsapp import send_whatsapp_message
+
         result = send_whatsapp_message("2348000000001", "Hello")
         self.assertFalse(result)
 
@@ -417,12 +443,14 @@ class WhatsAppServiceTests(TestCase):
     def test_exception_with_quota_keyword_marks_exhausted(self, mock_post):
         mock_post.side_effect = Exception("quota limit reached")
         from .services.whatsapp import send_whatsapp_message, is_whatsapp_quota_exceeded
+
         send_whatsapp_message("2348000000001", "Hello")
         self.assertTrue(is_whatsapp_quota_exceeded())
 
     @patch("habits.services.whatsapp.send_whatsapp_message", return_value=True)
     def test_send_otp_whatsapp_includes_otp_in_message(self, mock_send):
         from .services.whatsapp import send_otp_whatsapp
+
         send_otp_whatsapp("2348000000001", "999111", 15)
         message = mock_send.call_args[0][1]
         self.assertIn("999111", message)
@@ -430,6 +458,7 @@ class WhatsAppServiceTests(TestCase):
     @patch("habits.services.whatsapp.is_whatsapp_quota_exceeded", return_value=True)
     def test_send_otp_whatsapp_returns_false_when_quota_exceeded(self, mock_quota):
         from .services.whatsapp import send_otp_whatsapp
+
         result = send_otp_whatsapp("2348000000001", "999111", 15)
         self.assertFalse(result)
 
@@ -438,15 +467,18 @@ class WhatsAppServiceTests(TestCase):
 # AI service
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 @override_settings(GEMINI_API_KEY="test-key-123")
 class AIServiceTests(TestCase):
 
     def setUp(self):
         from django.core.cache import cache
+
         cache.clear()
 
     def _call(self, habit="Reading", streak=5, missed=0):
         from .services.ai_service import generate_habit_nudge
+
         return generate_habit_nudge(habit, streak, missed)
 
     @patch("habits.services.ai_service._call_gemini")
@@ -460,6 +492,7 @@ class AIServiceTests(TestCase):
     @patch("habits.services.ai_service._call_gemini")
     def test_falls_back_when_response_malformed(self, mock_call):
         from .services.ai_service import FALLBACK_NUDGES
+
         mock_call.return_value = {"candidates": []}
         result = self._call()
         self.assertIn(result, FALLBACK_NUDGES)
@@ -468,6 +501,7 @@ class AIServiceTests(TestCase):
     def test_falls_back_on_timeout(self, mock_call):
         import requests
         from .services.ai_service import FALLBACK_NUDGES
+
         mock_call.side_effect = requests.exceptions.Timeout()
         result = self._call()
         self.assertIn(result, FALLBACK_NUDGES)
@@ -476,6 +510,7 @@ class AIServiceTests(TestCase):
     def test_falls_back_on_connection_error(self, mock_call):
         import requests
         from .services.ai_service import FALLBACK_NUDGES
+
         mock_call.side_effect = requests.exceptions.ConnectionError()
         result = self._call()
         self.assertIn(result, FALLBACK_NUDGES)
@@ -484,6 +519,7 @@ class AIServiceTests(TestCase):
     def test_marks_model_exhausted_on_429(self, mock_call):
         import requests
         from .services.ai_service import _is_model_exhausted, GEMINI_MODELS
+
         err = requests.exceptions.HTTPError()
         err.response = MagicMock(status_code=429, text="quota exceeded")
         mock_call.side_effect = err
@@ -492,7 +528,12 @@ class AIServiceTests(TestCase):
 
     @patch("habits.services.ai_service._call_gemini")
     def test_skips_all_calls_when_all_models_exhausted(self, mock_call):
-        from .services.ai_service import _mark_model_exhausted, GEMINI_MODELS, FALLBACK_NUDGES
+        from .services.ai_service import (
+            _mark_model_exhausted,
+            GEMINI_MODELS,
+            FALLBACK_NUDGES,
+        )
+
         for m in GEMINI_MODELS:
             _mark_model_exhausted(m)
         result = self._call()
@@ -502,6 +543,7 @@ class AIServiceTests(TestCase):
     @override_settings(GEMINI_API_KEY="")
     def test_falls_back_when_no_api_key(self):
         from .services.ai_service import FALLBACK_NUDGES
+
         result = self._call()
         self.assertIn(result, FALLBACK_NUDGES)
 
@@ -509,26 +551,29 @@ class AIServiceTests(TestCase):
     def test_breaks_on_403(self, mock_call):
         import requests
         from .services.ai_service import FALLBACK_NUDGES
+
         err = requests.exceptions.HTTPError()
         err.response = MagicMock(status_code=403, text="permission denied")
         mock_call.side_effect = err
         result = self._call()
-        
-        self.assertIn(result, FALLBACK_NUDGES)
-        mock_call.assert_called_once()  
 
+        self.assertIn(result, FALLBACK_NUDGES)
+        mock_call.assert_called_once()
 
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Model: Habit business logic
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 class HabitMarkDoneTests(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username="2348000000001", password="pass")
         Profile.objects.create(user=self.user, phone_number="2348000000001")
-        self.habit = Habit.objects.create(user=self.user, name="Reading", category="CUSTOM")
+        self.habit = Habit.objects.create(
+            user=self.user, name="Reading", category="CUSTOM"
+        )
 
     def test_first_mark_sets_streak_to_1(self):
         self.habit.mark_done()
@@ -578,6 +623,7 @@ class HabitMarkDoneTests(TestCase):
 
     def test_creates_daily_record(self):
         from .models import DailyRecord
+
         self.habit.mark_done()
         self.assertTrue(
             DailyRecord.objects.filter(
@@ -599,7 +645,9 @@ class HabitRecordMissTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="2348000000099", password="pass")
         Profile.objects.create(user=self.user, phone_number="2348000000099")
-        self.habit = Habit.objects.create(user=self.user, name="Exercise", category="CUSTOM")
+        self.habit = Habit.objects.create(
+            user=self.user, name="Exercise", category="CUSTOM"
+        )
 
     def test_miss_increments_missed_count(self):
         self.habit.record_miss()
@@ -634,6 +682,7 @@ class HabitRecordMissTests(TestCase):
 
     def test_creates_daily_record_for_yesterday(self):
         from .models import DailyRecord
+
         self.habit.record_miss()
         yesterday = timezone.localdate() - timedelta(days=1)
         self.assertTrue(
@@ -656,9 +705,11 @@ class HabitRecordMissTests(TestCase):
     def test_missed_yesterday_property_false_when_never_started(self):
         self.assertFalse(self.habit.missed_yesterday)
 
+
 # ──────────────────────────────────────────────────────────────────────────────
 # View helpers / fixtures
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 def make_user(phone="2348000000001", password="StrongPass1!", email="", active=True):
     user = User.objects.create_user(
@@ -695,47 +746,56 @@ class RegressionTests(TestCase):
         Fixed: changed to 'Lax' + added SECURE_PROXY_SSL_HEADER for Render.
         """
         from django.conf import settings
-        self.assertEqual(settings.SESSION_COOKIE_SAMESITE, 'Lax')
+
+        self.assertEqual(settings.SESSION_COOKIE_SAMESITE, "Lax")
         self.assertFalse(settings.SECURE_SSL_REDIRECT)
         self.assertEqual(
-            settings.SECURE_PROXY_SSL_HEADER,
-            ('HTTP_X_FORWARDED_PROTO', 'https')
+            settings.SECURE_PROXY_SSL_HEADER, ("HTTP_X_FORWARDED_PROTO", "https")
         )
 
     def test_habit_choice_template_values_match_model_constants(self):
-    
+
         from .services.helpers import parse_habit
+
         for key, label in Habit.HABIT_CHOICES:
             with self.subTest(habit=key):
-                if key.upper() == 'CUSTOM':
-                    
-                    name, category = parse_habit({
-                        "habit_choice": key.lower(),
-                        "custom_habit": "Morning run",
-                    })
+                if key.upper() == "CUSTOM":
+
+                    name, category = parse_habit(
+                        {
+                            "habit_choice": key.lower(),
+                            "custom_habit": "Morning run",
+                        }
+                    )
                 else:
                     name, category = parse_habit({"habit_choice": key.lower()})
-                
-                self.assertIsNotNone(name,
-                    f"'{key}' is not parseable — template option value mismatch")
+
+                self.assertIsNotNone(
+                    name, f"'{key}' is not parseable — template option value mismatch"
+                )
 
     @patch("habits.views.send_otp", return_value=(True, "whatsapp"))
     @patch("habits.views.is_ratelimited", return_value=False)
     def test_session_survives_registration_redirect(self, mock_rl, mock_send):
-       
-        response = self.client.post(reverse("index"), {
-            "identifier": "+2348123456789",
-            "password": "ValidPass123!",
-            "habit_choice": Habit.HABIT_CHOICES[0][0].lower(),
-        })
+
+        response = self.client.post(
+            reverse("index"),
+            {
+                "identifier": "+2348123456789",
+                "password": "ValidPass123!",
+                "habit_choice": Habit.HABIT_CHOICES[0][0].lower(),
+            },
+        )
         self.assertRedirects(response, reverse("verify_otp"))
 
         response = self.client.get(reverse("verify_otp"))
         self.assertEqual(response.status_code, 200)
-        self.assertIn('pending_registration', self.client.session)
-        self.assertIn('otp_data', self.client.session)      # now actually written
-        self.assertIn('otp_method', self.client.session)
-@override_settings(RATELIMIT_ENABLE=False)     
+        self.assertIn("pending_registration", self.client.session)
+        self.assertIn("otp_data", self.client.session)  # now actually written
+        self.assertIn("otp_method", self.client.session)
+
+
+@override_settings(RATELIMIT_ENABLE=False)
 class IndexViewTests(TestCase):
 
     def setUp(self):
@@ -789,14 +849,18 @@ class IndexViewTests(TestCase):
     @patch("habits.views.send_otp", return_value=(True, "whatsapp"))
     @patch("habits.views.store_otp")
     @patch("habits.views.is_ratelimited", return_value=False)
-    def test_successful_registration_redirects_to_verify(self, mock_rl, mock_store, mock_send):
+    def test_successful_registration_redirects_to_verify(
+        self, mock_rl, mock_store, mock_send
+    ):
         response = self._post()
         self.assertRedirects(response, reverse("verify_otp"))
 
     @patch("habits.views.send_otp", return_value=(True, "whatsapp"))
     @patch("habits.views.store_otp")
     @patch("habits.views.is_ratelimited", return_value=False)
-    def test_pending_registration_stored_in_session(self, mock_rl, mock_store, mock_send):
+    def test_pending_registration_stored_in_session(
+        self, mock_rl, mock_store, mock_send
+    ):
         self._post()
         pending = self.client.session.get("pending_registration")
         self.assertIsNotNone(pending)
@@ -815,7 +879,9 @@ class IndexViewTests(TestCase):
         # Email fallback message should be shown
         messages_list = list(response.wsgi_request._messages)
         texts = [str(m) for m in messages_list]
-        self.assertTrue(any("email" in t.lower() or "capacity" in t.lower() for t in texts))
+        self.assertTrue(
+            any("email" in t.lower() or "capacity" in t.lower() for t in texts)
+        )
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -827,7 +893,7 @@ class VerifyOTPViewTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse("verify_otp")
-        
+
         session = self.client.session
         session["pending_registration"] = {
             "phone": CLEAN_PHONE,
@@ -966,41 +1032,56 @@ class LoginViewTests(TestCase):
         self.assertRedirects(response, reverse("habit_list"))
 
     def test_valid_credentials_redirect_to_habit_list(self):
-        response = self.client.post(self.url, {
-            "identifier": VALID_PHONE,
-            "password": VALID_PASS,
-        })
+        response = self.client.post(
+            self.url,
+            {
+                "identifier": VALID_PHONE,
+                "password": VALID_PASS,
+            },
+        )
         self.assertRedirects(response, reverse("habit_list"))
 
     def test_wrong_password_shows_error(self):
-        response = self.client.post(self.url, {
-            "identifier": VALID_PHONE,
-            "password": "WrongPassword1!",
-        })
+        response = self.client.post(
+            self.url,
+            {
+                "identifier": VALID_PHONE,
+                "password": "WrongPassword1!",
+            },
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Invalid")
 
     def test_invalid_phone_shows_error(self):
-        response = self.client.post(self.url, {
-            "identifier": "bad",
-            "password": VALID_PASS,
-        })
+        response = self.client.post(
+            self.url,
+            {
+                "identifier": "bad",
+                "password": VALID_PASS,
+            },
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_banned_user_redirected_to_banned(self):
         self.user.is_active = False
         self.user.save()
-        response = self.client.post(self.url, {
-            "identifier": VALID_PHONE,
-            "password": VALID_PASS,
-        })
+        response = self.client.post(
+            self.url,
+            {
+                "identifier": VALID_PHONE,
+                "password": VALID_PASS,
+            },
+        )
         self.assertRedirects(response, reverse("banned"), fetch_redirect_response=False)
 
     def test_nonexistent_user_shows_invalid_error(self):
-        response = self.client.post(self.url, {
-            "identifier": "+2348099999999",
-            "password": VALID_PASS,
-        })
+        response = self.client.post(
+            self.url,
+            {
+                "identifier": "+2348099999999",
+                "password": VALID_PASS,
+            },
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Invalid")
 
@@ -1008,6 +1089,7 @@ class LoginViewTests(TestCase):
 # ──────────────────────────────────────────────────────────────────────────────
 # Logout view
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 class LogoutViewTests(TestCase):
 
@@ -1022,7 +1104,9 @@ class LogoutViewTests(TestCase):
         self.assertRedirects(response, reverse("index"))
         # Confirm session is cleared
         response2 = self.client.get(reverse("habit_list"))
-        self.assertRedirects(response2, f"{reverse('login')}?next={reverse('habit_list')}")
+        self.assertRedirects(
+            response2, f"{reverse('login')}?next={reverse('habit_list')}"
+        )
 
     def test_get_redirects_to_habit_list(self):
         self.client.force_login(self.user)
@@ -1037,6 +1121,7 @@ class LogoutViewTests(TestCase):
 # ──────────────────────────────────────────────────────────────────────────────
 # Habit list (dashboard)
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 class HabitListViewTests(TestCase):
 
@@ -1057,11 +1142,13 @@ class HabitListViewTests(TestCase):
         self.assertTemplateUsed(response, "habits/habit_list.html")
 
     def test_banned_user_redirected(self):
-        
+
         self.client.force_login(self.user)
         with patch("habits.views.banned_check", return_value=True):
             response = self.client.get(self.url, follow=True)
-        final_url = response.redirect_chain[-1][0] if response.redirect_chain else self.url
+        final_url = (
+            response.redirect_chain[-1][0] if response.redirect_chain else self.url
+        )
         self.assertIn("banned", final_url)
 
     def test_context_contains_habits(self):
@@ -1093,6 +1180,7 @@ class HabitListViewTests(TestCase):
 # ──────────────────────────────────────────────────────────────────────────────
 # Mark habit done
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 class MarkHabitDoneTests(TestCase):
 
@@ -1147,15 +1235,15 @@ class MarkHabitDoneTests(TestCase):
 # Add Habit view
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 class AddHabitViewTests(TestCase):
-    
 
     def setUp(self):
         self.client = Client()
         self.user = make_user()
         self.url = reverse("add_habit")
         self.first_key = Habit.HABIT_CHOICES[0][0].lower()
-        
+
         self.client.raise_request_exception = False
 
     def test_unauthenticated_redirected(self):
@@ -1166,26 +1254,28 @@ class AddHabitViewTests(TestCase):
         """Requires habits/add_habit.html template to exist."""
         self.client.force_login(self.user)
         response = self.client.get(self.url)
-        
+
         self.assertIn(response.status_code, [200, 500])
 
     def test_valid_post_creates_habit(self):
-        
+
         self.client.force_login(self.user)
         self.client.post(self.url, {"habit_choice": self.first_key})
-        
+
         exists = Habit.objects.filter(user=self.user).exists()
-        
+
         self.assertIn(exists, [True, False])
 
     def test_duplicate_habit_returns_400(self):
         self.client.force_login(self.user)
-        self.client.post(self.url, {"habit_choice": self.first_key}, follow=True)  # follow redirect
+        self.client.post(
+            self.url, {"habit_choice": self.first_key}, follow=True
+        )  # follow redirect
         response = self.client.post(self.url, {"habit_choice": self.first_key})
         self.assertIn(response.status_code, [400, 500])
 
     def test_max_three_habits_enforced(self):
-        
+
         self.client.force_login(self.user)
         keys = [k.lower() for k, _ in Habit.HABIT_CHOICES[:4]]
         for key in keys[:3]:
@@ -1194,7 +1284,7 @@ class AddHabitViewTests(TestCase):
         self.assertIn(response.status_code, [400, 500])
 
     def test_invalid_habit_returns_400(self):
-        
+
         self.client.force_login(self.user)
         response = self.client.post(self.url, {"habit_choice": "NOTREAL"})
         self.assertIn(response.status_code, [400, 500])
@@ -1202,25 +1292,30 @@ class AddHabitViewTests(TestCase):
     def test_banned_user_redirected(self):
         self.client.force_login(self.user)
         with patch("habits.views.banned_check", return_value=True):
-            response = self.client.post(self.url, {"habit_choice": self.first_key}, follow=True)
-        final_url = response.redirect_chain[-1][0] if response.redirect_chain else self.url
+            response = self.client.post(
+                self.url, {"habit_choice": self.first_key}, follow=True
+            )
+        final_url = (
+            response.redirect_chain[-1][0] if response.redirect_chain else self.url
+        )
         self.assertIn("banned", final_url)
 
     def test_htmx_request_returns_partial(self):
-        
+
         self.client.force_login(self.user)
         response = self.client.post(
             self.url,
             {"habit_choice": self.first_key},
             HTTP_HX_REQUEST="true",
         )
-        
+
         self.assertIn(response.status_code, [200, 500])
 
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Maintenance trigger
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 @override_settings(MAINTENANCE_KEY="supersecretkey")
 class MaintenanceTriggerTests(TestCase):
@@ -1251,7 +1346,9 @@ class MaintenanceTriggerTests(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_get_method_not_allowed(self):
-        response = self.client.get(f"{self.url}?task=send_nudges", {"key": "supersecretkey"})
+        response = self.client.get(
+            f"{self.url}?task=send_nudges", {"key": "supersecretkey"}
+        )
         self.assertEqual(response.status_code, 405)
 
     # --- send_nudges ---
@@ -1338,6 +1435,7 @@ class MaintenanceTriggerTests(TestCase):
 # Health check
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 class HealthCheckTests(TestCase):
 
     def test_returns_200_ok(self):
@@ -1349,6 +1447,7 @@ class HealthCheckTests(TestCase):
 # ──────────────────────────────────────────────────────────────────────────────
 # Banned view
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 class BannedViewTests(TestCase):
 
@@ -1362,25 +1461,29 @@ class BannedViewTests(TestCase):
 # Security & edge cases
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 class SecurityTests(TestCase):
 
     def setUp(self):
         self.client = Client()
 
     def test_maintenance_key_constant_time_compare(self):
-       
+
         import inspect
         from . import views
+
         source = inspect.getsource(views.maintenance_trigger)
         self.assertIn("hmac.compare_digest", source)
 
     def test_otp_stored_as_hash_not_plaintext(self):
-        
+
         factory = RequestFactory()
         request = factory.get("/")
         from django.contrib.sessions.backends.db import SessionStore
+
         request.session = SessionStore()
         from .services.otp import store_otp
+
         store_otp(request, CLEAN_PHONE, "123456")
         stored = request.session["otp_data"]["otp_hash"]
         self.assertNotEqual(stored, "123456")

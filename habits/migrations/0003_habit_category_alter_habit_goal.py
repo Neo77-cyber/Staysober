@@ -6,18 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('habits', '0002_profile'),
+        ("habits", "0002_profile"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='habit',
-            name='category',
-            field=models.CharField(choices=[('READING', 'Read for 30 mins'), ('EXERCISE', 'Exercise'), ('WATER', 'Drink 2L Water'), ('CUSTOM', 'Custom Habit')], default='CUSTOM', max_length=20),
+            model_name="habit",
+            name="category",
+            field=models.CharField(
+                choices=[
+                    ("READING", "Read for 30 mins"),
+                    ("EXERCISE", "Exercise"),
+                    ("WATER", "Drink 2L Water"),
+                    ("CUSTOM", "Custom Habit"),
+                ],
+                default="CUSTOM",
+                max_length=20,
+            ),
         ),
         migrations.AlterField(
-            model_name='habit',
-            name='goal',
-            field=models.CharField(default='Daily', max_length=255),
+            model_name="habit",
+            name="goal",
+            field=models.CharField(default="Daily", max_length=255),
         ),
     ]

@@ -10,12 +10,18 @@ logger = logging.getLogger(__name__)
 WA_QUOTA_EXCEEDED_KEY = "green_api_quota_exceeded"
 WA_QUOTA_COOLDOWN = 60 * 60 * 6
 
+
 def is_whatsapp_quota_exceeded() -> bool:
     return cache.get(WA_QUOTA_EXCEEDED_KEY) is not None
 
+
 def mark_whatsapp_quota_exceeded():
     cache.set(WA_QUOTA_EXCEEDED_KEY, True, timeout=WA_QUOTA_COOLDOWN)
-    logger.warning("Green API quota exhausted — falling back to email for %dh.", WA_QUOTA_COOLDOWN // 3600)
+    logger.warning(
+        "Green API quota exhausted — falling back to email for %dh.",
+        WA_QUOTA_COOLDOWN // 3600,
+    )
+
 
 def send_whatsapp_message(phone_number: str, message: str) -> bool:
     if is_whatsapp_quota_exceeded():
@@ -54,7 +60,7 @@ def send_whatsapp_message(phone_number: str, message: str) -> bool:
         return False
     except Exception as e:
         error_str = str(e).lower()
-        if 'quota' in error_str or 'limit' in error_str or 'exhausted' in error_str:
+        if "quota" in error_str or "limit" in error_str or "exhausted" in error_str:
             mark_whatsapp_quota_exceeded()
         logger.error("Failed to send WA message to %s: %s", mask_phone(phone_number), e)
         return False

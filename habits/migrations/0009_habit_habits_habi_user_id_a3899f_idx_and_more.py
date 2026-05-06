@@ -6,16 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('habits', '0008_alter_habit_category'),
+        ("habits", "0008_alter_habit_category"),
     ]
 
     operations = [
         migrations.AddIndex(
-            model_name='habit',
-            index=models.Index(fields=['user', 'last_marked_date'], name='habits_habi_user_id_a3899f_idx'),
+            model_name="habit",
+            index=models.Index(
+                fields=["user", "last_marked_date"],
+                name="habits_habi_user_id_a3899f_idx",
+            ),
         ),
         migrations.AddIndex(
-            model_name='habit',
-            index=models.Index(fields=['user'], name='habits_habi_user_id_599ecd_idx'),
+            model_name="habit",
+            index=models.Index(fields=["user"], name="habits_habi_user_id_599ecd_idx"),
         ),
     ]

@@ -6,13 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('habits', '0007_alter_habit_category'),
+        ("habits", "0007_alter_habit_category"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='habit',
-            name='category',
-            field=models.CharField(choices=[('DAILY PRAYERS', 'Daily Prayers'), ('WORK OUT', 'Work Out'), ('EXAM PREPARATION', 'Exam Preparation'), ('GAMBLING', 'Gambling'), ('WEED SOBER', 'Weed Sober'), ('LATE NIGHT EATING', 'Late Night Eating'), ('BUY BUY', 'Buy Buy'), ('ALCOHOL SOBER', 'Alcohol Sober'), ('CUSTOM', 'Custom Habit')], default='CUSTOM', max_length=225),
+            model_name="habit",
+            name="category",
+            field=models.CharField(
+                choices=[
+                    ("DAILY PRAYERS", "Daily Prayers"),
+                    ("WORK OUT", "Work Out"),
+                    ("EXAM PREPARATION", "Exam Preparation"),
+                    ("GAMBLING", "Gambling"),
+                    ("WEED SOBER", "Weed Sober"),
+                    ("LATE NIGHT EATING", "Late Night Eating"),
+                    ("BUY BUY", "Buy Buy"),
+                    ("ALCOHOL SOBER", "Alcohol Sober"),
+                    ("CUSTOM", "Custom Habit"),
+                ],
+                default="CUSTOM",
+                max_length=225,
+            ),
         ),
     ]

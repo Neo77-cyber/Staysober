@@ -7,18 +7,40 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('habits', '0003_habit_category_alter_habit_goal'),
+        ("habits", "0003_habit_category_alter_habit_goal"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='habit',
-            name='category',
-            field=models.CharField(choices=[('ENDLESS SCROLLING', 'Endless Scrolling'), ('PROCRASTINATION', 'Procrastination'), ('LATE NIGHT EATING', 'Late Night Eating'), ('IMPULSE BUYING', 'Impulse Buying'), ('GAMBLING', 'Gambling'), ('WEED SOBER', 'Weed Sober'), ('ALCOHOL SOBER', 'Alcohol Sober'), ('CUSTOM', 'Custom Habit')], default='CUSTOM', max_length=225),
+            model_name="habit",
+            name="category",
+            field=models.CharField(
+                choices=[
+                    ("ENDLESS SCROLLING", "Endless Scrolling"),
+                    ("PROCRASTINATION", "Procrastination"),
+                    ("LATE NIGHT EATING", "Late Night Eating"),
+                    ("IMPULSE BUYING", "Impulse Buying"),
+                    ("GAMBLING", "Gambling"),
+                    ("WEED SOBER", "Weed Sober"),
+                    ("ALCOHOL SOBER", "Alcohol Sober"),
+                    ("CUSTOM", "Custom Habit"),
+                ],
+                default="CUSTOM",
+                max_length=225,
+            ),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='phone_number',
-            field=models.CharField(max_length=13, unique=True, validators=[django.core.validators.RegexValidator(message="Phone number must be entered in the format: '2348123456789'.", regex='^234\\d{10}$')]),
+            model_name="profile",
+            name="phone_number",
+            field=models.CharField(
+                max_length=13,
+                unique=True,
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message="Phone number must be entered in the format: '2348123456789'.",
+                        regex="^234\\d{10}$",
+                    )
+                ],
+            ),
         ),
     ]

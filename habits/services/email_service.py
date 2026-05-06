@@ -5,10 +5,6 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
-
-
-
-
 def send_otp_email(email: str, otp: str, expiry_minutes: int) -> bool:
     """
     Send OTP email using Resend API

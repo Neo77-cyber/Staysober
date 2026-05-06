@@ -7,5 +7,3 @@ auditlog.register(Habit)
 admin.site.register(Habit)
 admin.site.register(Profile)
 admin.site.register(DailyRecord)
-
-

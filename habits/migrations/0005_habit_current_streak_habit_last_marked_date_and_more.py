@@ -6,28 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('habits', '0004_alter_habit_category_alter_profile_phone_number'),
+        ("habits", "0004_alter_habit_category_alter_profile_phone_number"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='habit',
-            name='current_streak',
+            model_name="habit",
+            name="current_streak",
             field=models.PositiveIntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='habit',
-            name='last_marked_date',
+            model_name="habit",
+            name="last_marked_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='habit',
-            name='longest_streak',
+            model_name="habit",
+            name="longest_streak",
             field=models.PositiveIntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='habit',
-            name='missed_count',
+            model_name="habit",
+            name="missed_count",
             field=models.PositiveIntegerField(default=0),
         ),
     ]

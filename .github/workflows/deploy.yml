@@ -55,6 +55,14 @@ jobs:
       
       - name: Install Playwright browsers
         run: playwright install --with-deps chromium webkit firefox
+      
+      - name: Clear axes lockout
+        run: |
+          python manage.py shell -c "
+          from axes.models import AccessAttempt
+          AccessAttempt.objects.all().delete()
+          print('Lockout cleared')
+          "
 
       - name: Run Playwright E2E tests
         env:
@@ -64,6 +72,7 @@ jobs:
           E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
           MAINTENANCE_KEY: ${{ secrets.MAINTENANCE_KEY }}
           E2E_TESTING: True
+      
         run: pytest tests/e2e/ --browser chromium --browser webkit --verbosity=2
 
   deploy:

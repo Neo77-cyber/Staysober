@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('habits', '0005_habit_current_streak_habit_last_marked_date_and_more'),
+        ("habits", "0005_habit_current_streak_habit_last_marked_date_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='habit',
-            name='cached_nudge',
+            model_name="habit",
+            name="cached_nudge",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='habit',
-            name='nudge_generated_at',
+            model_name="habit",
+            name="nudge_generated_at",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

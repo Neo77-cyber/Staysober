@@ -8,12 +8,11 @@ logger = logging.getLogger(__name__)
 
 
 GEMINI_MODELS = [
-      
-    "gemini-2.5-flash",      
+    "gemini-2.5-flash",
 ]
 
 
-QUOTA_COOLDOWN_SECONDS = 3600 
+QUOTA_COOLDOWN_SECONDS = 3600
 
 FALLBACK_NUDGES = [
     "No allow your fire go out. Stay focused.",
@@ -46,16 +45,16 @@ def _mark_model_exhausted(model: str):
 
 
 def _call_gemini(url: str, payload: dict) -> dict:
-    
+
     response = requests.post(url, json=payload, timeout=15)
     response.raise_for_status()
     return response.json()
 
 
 def _extract_text(data: dict) -> Optional[str]:
-    
+
     try:
-        return data['candidates'][0]['content']['parts'][0]['text'].strip()
+        return data["candidates"][0]["content"]["parts"][0]["text"].strip()
     except (KeyError, IndexError, TypeError):
         return None
 
@@ -65,13 +64,12 @@ def _get_fallback(missed_count: int) -> str:
 
 
 def generate_habit_nudge(habit_name: str, streak: int, missed_count: int) -> str:
-    
+
     api_key = settings.GEMINI_API_KEY
     if not api_key:
         logger.warning("GEMINI_API_KEY not set — using fallback.")
         return _get_fallback(missed_count)
 
-    
     available_models = [m for m in GEMINI_MODELS if not _is_model_exhausted(m)]
     if not available_models:
         logger.info("All Gemini models currently quota-exhausted — using fallback.")
@@ -96,7 +94,7 @@ def generate_habit_nudge(habit_name: str, streak: int, missed_count: int) -> str
             if text:
                 logger.info("Nudge generated via %s.", model)
                 return text
-            
+
             logger.warning("Gemini %s unexpected response structure: %s", model, data)
             continue
 
@@ -105,22 +103,25 @@ def generate_habit_nudge(habit_name: str, streak: int, missed_count: int) -> str
             body = e.response.text[:300] if e.response is not None else ""
 
             if status == 429:
-                
-                logger.error("Gemini %s quota exceeded (429) — trying next model.", model)
+
+                logger.error(
+                    "Gemini %s quota exceeded (429) — trying next model.", model
+                )
                 _mark_model_exhausted(model)
-                continue  
+                continue
 
             elif status == 403:
-                
+
                 logger.critical(
                     "Gemini 403 PERMISSION_DENIED on %s. "
                     "API key may be leaked or revoked — rotate it immediately. Body: %s",
-                    model, body
+                    model,
+                    body,
                 )
                 break
 
             elif status == 404:
-                
+
                 logger.warning("Gemini model %s not found (404) — skipping.", model)
                 continue
 
