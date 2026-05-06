@@ -280,8 +280,13 @@ class SendOTPTests(TestCase):
 # Email service
 
 
+from unittest.mock import patch, MagicMock
+from django.test import TestCase, override_settings
+from django.core import mail
+
+
 @override_settings(
-    EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+    RESEND_API_KEY="test_key_123",
     DEFAULT_FROM_EMAIL="noreply@dearself.app",
 )
 class SendOTPEmailTests(TestCase):
@@ -290,36 +295,82 @@ class SendOTPEmailTests(TestCase):
         from .services.email_service import send_otp_email
         return send_otp_email(email, otp, expiry)
 
-    def test_returns_true_on_success(self):
+    @patch("habits.services.email_service.requests.post")
+    def test_returns_true_on_success(self, mock_post):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
+        
         result = self._call("test@example.com", "654321")
         self.assertTrue(result)
 
-    def test_email_is_sent(self):
-        self._call("test@example.com", "654321")
-        self.assertEqual(len(mail.outbox), 1)
-
-    def test_correct_recipient(self):
-        self._call("user@example.com", "654321")
-        self.assertIn("user@example.com", mail.outbox[0].to)
-
-    def test_otp_in_body(self):
+    @patch("habits.services.email_service.requests.post")
+    def test_makes_correct_api_call(self, mock_post):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
+        
         self._call("user@example.com", "777888")
-        self.assertIn("777888", mail.outbox[0].body)
+        
+        mock_post.assert_called_once()
+        args, kwargs = mock_post.call_args
+        self.assertEqual(args[0], "https://api.resend.com/emails")
+        self.assertEqual(kwargs["headers"]["Authorization"], "Bearer test_key_123")
+        self.assertEqual(kwargs["json"]["to"], ["user@example.com"])
+        self.assertIn("777888", kwargs["json"]["html"])
 
-    def test_otp_in_html_body(self):
+    @patch("habits.services.email_service.requests.post")
+    def test_otp_in_email_body(self, mock_post):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
+        
         self._call("user@example.com", "777888")
-        alternatives = mail.outbox[0].alternatives
-        html_body = alternatives[0][0] if alternatives else ""
+        
+        call_args = mock_post.call_args[1]
+        html_body = call_args["json"]["html"]
+        text_body = call_args["json"]["text"]
         self.assertIn("777888", html_body)
+        self.assertIn("777888", text_body)
 
-    def test_returns_false_on_send_error(self):
-        with patch("habits.services.email_service.send_mail", side_effect=Exception("SMTP down")):
-            result = self._call("bad@example.com", "000000")
+    @patch("habits.services.email_service.requests.post")
+    def test_returns_false_on_api_error(self, mock_post):
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.text = "Invalid email"
+        mock_post.return_value = mock_response
+        
+        result = self._call("bad@example.com", "000000")
         self.assertFalse(result)
 
-    def test_from_email_is_correct(self):
+    @patch("habits.services.email_service.requests.post")
+    def test_returns_false_on_exception(self, mock_post):
+        mock_post.side_effect = Exception("Network error")
+        
+        result = self._call("test@example.com", "123456")
+        self.assertFalse(result)
+
+    @patch("habits.services.email_service.requests.post")
+    def test_from_email_is_correct(self, mock_post):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
+        
         self._call("user@example.com", "123456")
-        self.assertEqual(mail.outbox[0].from_email, "noreply@dearself.app")
+        
+        call_args = mock_post.call_args[1]
+        self.assertEqual(call_args["json"]["from"], "DearSelf <noreply@dearself.app>")
+
+    @patch("habits.services.email_service.requests.post")
+    def test_subject_is_correct(self, mock_post):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
+        
+        self._call("user@example.com", "123456")
+        
+        call_args = mock_post.call_args[1]
+        self.assertEqual(call_args["json"]["subject"], "Your DearSelf verification code")
 
 
 
