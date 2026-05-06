@@ -61,6 +61,8 @@ jobs:
           BASE_URL: https://dear-self.onrender.com
           E2E_TEST_PHONE: ${{ secrets.E2E_TEST_PHONE }}
           E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          MAINTENANCE_KEY: ${{ secrets.MAINTENANCE_KEY }}
         run: pytest tests/e2e/ --browser chromium --browser webkit --verbosity=2
 
   deploy:
