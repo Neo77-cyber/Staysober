@@ -1226,7 +1226,6 @@ class AddHabitViewTests(TestCase):
 class MaintenanceTriggerTests(TestCase):
 
     def setUp(self):
-        self.client = Client(enforce_csrf_checks=True)
         self.client = Client()
         self.url = reverse("maintenance_check")
         self.user = make_user()
@@ -1265,17 +1264,23 @@ class MaintenanceTriggerTests(TestCase):
         self.assertIn("Sent", response.content.decode())
 
     @patch("habits.views.send_whatsapp_message", return_value=True)
-    def test_send_nudges_uses_cached_nudge(self, mock_wa):
-        self.habit.cached_nudge = "Custom nudge text"
-        self.habit.save()
-        self._post("send_nudges")
+    def test_send_nudges_uses_fallback_nudge(self, mock_wa):
+       
+        response = self._post("send_nudges")
+        self.assertEqual(response.status_code, 200)
         call_args = mock_wa.call_args[0][1]
-        self.assertIn("Custom nudge text", call_args)
+        
+        self.assertTrue(
+            any(phrase in call_args for phrase in [
+                "No allow your fire go out",
+                "You don start, no go back now", 
+                "Every day you hold on",
+                "Your future self go thank you",
+                "The goal no go chase itself"
+            ]),
+            f"Message should contain a fallback nudge. Got: {call_args[:100]}..."
+        )
         self.assertIn("https://dear-self.onrender.com/habits/", call_args)
-
-    # --- generate_nudges ---
-
-    
 
     # --- night_watch ---
 
@@ -1307,7 +1312,7 @@ class MaintenanceTriggerTests(TestCase):
     # --- debug_nudges ---
 
     def test_debug_nudges_returns_habit_info(self):
-        self.habit.cached_nudge = "Test nudge"
+        self.habit.cached_nudge = "Test nudge"  
         self.habit.save()
         response = self._post("debug_nudges")
         self.assertEqual(response.status_code, 200)
