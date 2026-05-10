@@ -94,12 +94,9 @@ def index(request):
         )
         return redirect("login")
     
-    if User.object.filter(user_email=email).exists():
-        message.info(
-            request, "User with this email already exists"
-            )
-
-        return request("habits/index.html")
+    if email and Profile.objects.filter(user_email=email).exists():
+        messages.info(request, "User with this email already exists")
+        return render(request, "habits/index.html")
 
     request.session["pending_registration"] = {
         "phone": clean_number,

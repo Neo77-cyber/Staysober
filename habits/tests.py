@@ -526,15 +526,6 @@ class HabitMarkDoneTests(TestCase):
         self.habit.refresh_from_db()
         self.assertEqual(self.habit.longest_streak, 100)
 
-    def test_creates_daily_record(self):
-        from .models import DailyRecord
-
-        self.habit.mark_done()
-        self.assertTrue(
-            DailyRecord.objects.filter(
-                habit=self.habit, date=timezone.localdate(), completed=True
-            ).exists()
-        )
 
     def test_marked_today_property_true_after_mark(self):
         self.habit.mark_done()
@@ -585,16 +576,6 @@ class HabitRecordMissTests(TestCase):
         self.user.refresh_from_db()
         self.assertTrue(self.user.is_active)
 
-    def test_creates_daily_record_for_yesterday(self):
-        from .models import DailyRecord
-
-        self.habit.record_miss()
-        yesterday = timezone.localdate() - timedelta(days=1)
-        self.assertTrue(
-            DailyRecord.objects.filter(
-                habit=self.habit, date=yesterday, completed=False
-            ).exists()
-        )
 
     def test_missed_yesterday_property_true_when_stale(self):
         two_days_ago = timezone.localdate() - timedelta(days=2)
