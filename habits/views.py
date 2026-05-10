@@ -423,8 +423,9 @@ def add_habit(request):
             )
 
             if request.headers.get("HX-Request"):
-                return render(
-                    request, "habits/partials/habit_card.html", {"habit": habit}
+                return HttpResponse(
+                    status=204,
+                    headers={"HX-Redirect": "/habits/"}   
                 )
 
     except Exception as e:

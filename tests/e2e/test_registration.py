@@ -10,20 +10,12 @@ TEST_EMAIL = os.getenv("E2E_TEST_EMAIL", "test@example.com")
 MAINTENANCE_KEY = os.getenv("MAINTENANCE_KEY", "")
 
 
-def clear_axes_lockout(page: Page):
-    """Clear login lockout for test account"""
-    if MAINTENANCE_KEY:
-        resp = page.request.get(
-            f"{BASE_URL}/debug/clear-test-lockout/",
-            headers={"X-Maintenance-Key": MAINTENANCE_KEY},
-        )
-        return resp.status == 200
-    return True
+
 
 
 def login(page: Page):
     """Helper for authenticated tests"""
-    clear_axes_lockout(page)
+    
 
     page.goto(f"{BASE_URL}/login/")
     page.fill("[name=identifier]", TEST_PHONE)
@@ -152,7 +144,7 @@ def test_login_full_journey(page: Page):
 
 def test_login_wrong_password_shows_error(page: Page):
     """Test that wrong password shows error message"""
-    clear_axes_lockout(page)
+    
     page.goto(f"{BASE_URL}/login/")
     page.fill("[name=identifier]", TEST_PHONE)
     page.fill("[name=password]", "WrongPassword999!")
