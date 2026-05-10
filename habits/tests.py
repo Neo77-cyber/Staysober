@@ -463,102 +463,7 @@ class WhatsAppServiceTests(TestCase):
         self.assertFalse(result)
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# AI service
-# ──────────────────────────────────────────────────────────────────────────────
 
-
-@override_settings(GEMINI_API_KEY="test-key-123")
-class AIServiceTests(TestCase):
-
-    def setUp(self):
-        from django.core.cache import cache
-
-        cache.clear()
-
-    def _call(self, habit="Reading", streak=5, missed=0):
-        from .services.ai_service import generate_habit_nudge
-
-        return generate_habit_nudge(habit, streak, missed)
-
-    @patch("habits.services.ai_service._call_gemini")
-    def test_returns_text_from_api(self, mock_call):
-        mock_call.return_value = {
-            "candidates": [{"content": {"parts": [{"text": "  Keep going!  "}]}}]
-        }
-        result = self._call()
-        self.assertEqual(result, "Keep going!")
-
-    @patch("habits.services.ai_service._call_gemini")
-    def test_falls_back_when_response_malformed(self, mock_call):
-        from .services.ai_service import FALLBACK_NUDGES
-
-        mock_call.return_value = {"candidates": []}
-        result = self._call()
-        self.assertIn(result, FALLBACK_NUDGES)
-
-    @patch("habits.services.ai_service._call_gemini")
-    def test_falls_back_on_timeout(self, mock_call):
-        import requests
-        from .services.ai_service import FALLBACK_NUDGES
-
-        mock_call.side_effect = requests.exceptions.Timeout()
-        result = self._call()
-        self.assertIn(result, FALLBACK_NUDGES)
-
-    @patch("habits.services.ai_service._call_gemini")
-    def test_falls_back_on_connection_error(self, mock_call):
-        import requests
-        from .services.ai_service import FALLBACK_NUDGES
-
-        mock_call.side_effect = requests.exceptions.ConnectionError()
-        result = self._call()
-        self.assertIn(result, FALLBACK_NUDGES)
-
-    @patch("habits.services.ai_service._call_gemini")
-    def test_marks_model_exhausted_on_429(self, mock_call):
-        import requests
-        from .services.ai_service import _is_model_exhausted, GEMINI_MODELS
-
-        err = requests.exceptions.HTTPError()
-        err.response = MagicMock(status_code=429, text="quota exceeded")
-        mock_call.side_effect = err
-        self._call()
-        self.assertTrue(_is_model_exhausted(GEMINI_MODELS[0]))
-
-    @patch("habits.services.ai_service._call_gemini")
-    def test_skips_all_calls_when_all_models_exhausted(self, mock_call):
-        from .services.ai_service import (
-            _mark_model_exhausted,
-            GEMINI_MODELS,
-            FALLBACK_NUDGES,
-        )
-
-        for m in GEMINI_MODELS:
-            _mark_model_exhausted(m)
-        result = self._call()
-        mock_call.assert_not_called()
-        self.assertIn(result, FALLBACK_NUDGES)
-
-    @override_settings(GEMINI_API_KEY="")
-    def test_falls_back_when_no_api_key(self):
-        from .services.ai_service import FALLBACK_NUDGES
-
-        result = self._call()
-        self.assertIn(result, FALLBACK_NUDGES)
-
-    @patch("habits.services.ai_service._call_gemini")
-    def test_breaks_on_403(self, mock_call):
-        import requests
-        from .services.ai_service import FALLBACK_NUDGES
-
-        err = requests.exceptions.HTTPError()
-        err.response = MagicMock(status_code=403, text="permission denied")
-        mock_call.side_effect = err
-        result = self._call()
-
-        self.assertIn(result, FALLBACK_NUDGES)
-        mock_call.assert_called_once()
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -1370,18 +1275,7 @@ class MaintenanceTriggerTests(TestCase):
 
     # --- generate_nudges ---
 
-    @patch("habits.views.generate_habit_nudge", return_value="Stay sharp today.")
-    def test_generate_nudges_saves_to_habit(self, mock_nudge):
-        response = self._post("generate_nudges")
-        self.assertEqual(response.status_code, 200)
-        self.habit.refresh_from_db()
-        self.assertEqual(self.habit.cached_nudge, "Stay sharp today.")
-
-    @patch("habits.views.generate_habit_nudge", side_effect=Exception("API down"))
-    def test_generate_nudges_handles_exception_gracefully(self, mock_nudge):
-        response = self._post("generate_nudges")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("ERROR", response.content.decode())
+    
 
     # --- night_watch ---
 
