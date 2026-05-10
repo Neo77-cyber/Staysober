@@ -181,7 +181,7 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_COOKIE_AGE = 1_209_600 
+SESSION_COOKIE_AGE = 1_209_600
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_NAME = "dearself_session"
 SESSION_COOKIE_DOMAIN = None
@@ -264,11 +264,8 @@ MAINTENANCE_KEY = env("MAINTENANCE_KEY")
 RESEND_API_KEY = env("RESEND_API_KEY", default="")
 
 
-
-
 if "test" in sys.argv:
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-
 
 
 # if os.environ.get('E2E_TESTING') == 'True':

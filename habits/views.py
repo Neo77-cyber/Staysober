@@ -93,7 +93,7 @@ def index(request):
             request, "An account with this number already exists. Please log in."
         )
         return redirect("login")
-    
+
     if email and Profile.objects.filter(user_email=email).exists():
         messages.info(request, "User with this email already exists")
         return render(request, "habits/index.html")
@@ -357,19 +357,21 @@ def habit_list(request):
     else:
         greeting = "Hey, night owl"
 
-    habits = list(Habit.objects.filter(user=request.user).only(
-        "id",
-        "name",
-        "category",
-        "current_streak",
-        "missed_count",
-        "last_marked_date",
-        "cached_nudge",
-    ))
+    habits = list(
+        Habit.objects.filter(user=request.user).only(
+            "id",
+            "name",
+            "category",
+            "current_streak",
+            "missed_count",
+            "last_marked_date",
+            "cached_nudge",
+        )
+    )
 
     total_streak = sum(h.current_streak for h in habits)
-    max_misses = max((h.missed_count for h in habits), default=0)   
-    days_left = max(3 - max_misses, 0)                              
+    max_misses = max((h.missed_count for h in habits), default=0)
+    days_left = max(3 - max_misses, 0)
 
     return render(
         request,
@@ -378,8 +380,8 @@ def habit_list(request):
             "habits": habits,
             "today": today,
             "total_streak": total_streak,
-            "total_misses": max_misses,      
-            "max_days_left": days_left,      
+            "total_misses": max_misses,
+            "max_days_left": days_left,
             "greeting": greeting,
         },
     )
@@ -459,9 +461,6 @@ def mark_habit_done(request, habit_id):
     return JsonResponse(result)
 
 
-
-
-
 # ---------------------------------------------------------------------------
 # Banned page
 # ---------------------------------------------------------------------------
@@ -519,7 +518,6 @@ def maintenance_trigger(request):
             try:
                 nudge = pick_nudge(user.id)
 
-                
                 habit_lines = "\n".join(
                     f"• {h.name}: {h.current_streak} day streak | {h.missed_count}/3 misses"
                     for h in habits
@@ -562,7 +560,6 @@ def maintenance_trigger(request):
                 banned_users.add(habit.user_id)
                 logger.warning("User %s banned after 3 misses.", habit.user.username)
 
-        
         active_habits = list(
             Habit.objects.filter(user__is_active=True).select_related("user__profile")
         )
@@ -598,7 +595,9 @@ def maintenance_trigger(request):
         )
 
     if task == "debug_nudges":
-        habits = Habit.objects.filter(user__is_active=True).select_related("user__profile")
+        habits = Habit.objects.filter(user__is_active=True).select_related(
+            "user__profile"
+        )
         lines = [
             f"Habit: {h.name} | streak: {h.current_streak} | misses: {h.missed_count} | last_marked: {h.last_marked_date}"
             for h in habits

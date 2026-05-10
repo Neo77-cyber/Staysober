@@ -463,9 +463,6 @@ class WhatsAppServiceTests(TestCase):
         self.assertFalse(result)
 
 
-
-
-
 # ──────────────────────────────────────────────────────────────────────────────
 # Model: Habit business logic
 # ──────────────────────────────────────────────────────────────────────────────
@@ -526,7 +523,6 @@ class HabitMarkDoneTests(TestCase):
         self.habit.refresh_from_db()
         self.assertEqual(self.habit.longest_streak, 100)
 
-
     def test_marked_today_property_true_after_mark(self):
         self.habit.mark_done()
         self.habit.refresh_from_db()
@@ -575,7 +571,6 @@ class HabitRecordMissTests(TestCase):
         self.habit.record_miss()
         self.user.refresh_from_db()
         self.assertTrue(self.user.is_active)
-
 
     def test_missed_yesterday_property_true_when_stale(self):
         two_days_ago = timezone.localdate() - timedelta(days=2)
@@ -1246,20 +1241,23 @@ class MaintenanceTriggerTests(TestCase):
 
     @patch("habits.views.send_whatsapp_message", return_value=True)
     def test_send_nudges_uses_fallback_nudge(self, mock_wa):
-       
+
         response = self._post("send_nudges")
         self.assertEqual(response.status_code, 200)
         call_args = mock_wa.call_args[0][1]
-        
+
         self.assertTrue(
-            any(phrase in call_args for phrase in [
-                "No allow your fire go out",
-                "You don start, no go back now", 
-                "Every day you hold on",
-                "Your future self go thank you",
-                "The goal no go chase itself"
-            ]),
-            f"Message should contain a fallback nudge. Got: {call_args[:100]}..."
+            any(
+                phrase in call_args
+                for phrase in [
+                    "No allow your fire go out",
+                    "You don start, no go back now",
+                    "Every day you hold on",
+                    "Your future self go thank you",
+                    "The goal no go chase itself",
+                ]
+            ),
+            f"Message should contain a fallback nudge. Got: {call_args[:100]}...",
         )
         self.assertIn("https://dear-self.onrender.com/habits/", call_args)
 
@@ -1293,7 +1291,7 @@ class MaintenanceTriggerTests(TestCase):
     # --- debug_nudges ---
 
     def test_debug_nudges_returns_habit_info(self):
-        self.habit.cached_nudge = "Test nudge"  
+        self.habit.cached_nudge = "Test nudge"
         self.habit.save()
         response = self._post("debug_nudges")
         self.assertEqual(response.status_code, 200)
