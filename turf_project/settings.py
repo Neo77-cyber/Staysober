@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "auditlog",
-    # "axes",
+    "axes",
     "habits",
     "debug_toolbar",
     "django_prometheus",
@@ -74,13 +74,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "axes.middleware.AxesMiddleware",
+    "axes.middleware.AxesMiddleware",
     "auditlog.middleware.AuditlogMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 AUTHENTICATION_BACKENDS = [
-    # "axes.backends.AxesStandaloneBackend",
+    "axes.backends.AxesStandaloneBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -196,9 +196,9 @@ CSRF_TRUSTED_ORIGINS = [
     "https://dear-self.onrender.com",
 ]
 
-# AXES_FAILURE_LIMIT = 10
-# AXES_COOLOFF_TIME = 0.30
-# AXES_LOCKOUT_TEMPLATE = "habits/lockout.html"
+AXES_FAILURE_LIMIT = 10
+AXES_COOLOFF_TIME = 0.30
+AXES_LOCKOUT_TEMPLATE = "habits/lockout.html"
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "habit_list"

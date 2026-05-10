@@ -26,6 +26,7 @@ sentry-sdk = "*"
 django-prometheus = "*"
 pytest-playwright = "*"
 black = "*"
+django-axes = "*"
 
 [dev-packages]
 
