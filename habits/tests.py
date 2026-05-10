@@ -1182,15 +1182,24 @@ class AddHabitViewTests(TestCase):
         self.assertIn("banned", final_url)
 
     def test_htmx_request_returns_partial(self):
-
         self.client.force_login(self.user)
-        response = self.client.post(
-            self.url,
-            {"habit_choice": self.first_key},
-            HTTP_HX_REQUEST="true",
-        )
-
-        self.assertIn(response.status_code, [200, 500])
+        
+        
+        with patch('habits.views.parse_habit') as mock_parse:
+            mock_parse.return_value = ("Test Habit", "CUSTOM")
+            
+            response = self.client.post(
+                self.url,
+                {"habit_choice": self.first_key},
+                HTTP_HX_REQUEST="true",
+            )
+            
+            
+            self.assertEqual(response.status_code, 204)
+            self.assertEqual(response.headers.get("HX-Redirect"), "/habits/")
+            
+            
+            self.assertTrue(Habit.objects.filter(user=self.user, name="Test Habit").exists())
 
 
 # ──────────────────────────────────────────────────────────────────────────────
