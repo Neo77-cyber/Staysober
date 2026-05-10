@@ -23,7 +23,6 @@ from django_ratelimit.core import is_ratelimited
 
 
 from .models import Habit, Profile
-from .services.ai_service import generate_habit_nudge, FALLBACK_NUDGES
 from .services.helpers import clean_phone_number, parse_habit, banned_check
 from .services.otp import (
     generate_otp,
@@ -94,6 +93,13 @@ def index(request):
             request, "An account with this number already exists. Please log in."
         )
         return redirect("login")
+    
+    if User.object.filter(user_email=email).exists():
+        message.info(
+            request, "User with this email already exists"
+            )
+
+        return request("habits/index.html")
 
     request.session["pending_registration"] = {
         "phone": clean_number,
@@ -354,7 +360,7 @@ def habit_list(request):
     else:
         greeting = "Hey, night owl"
 
-    habits = Habit.objects.filter(user=request.user).only(
+    habits = list(Habit.objects.filter(user=request.user).only(
         "id",
         "name",
         "category",
@@ -362,11 +368,11 @@ def habit_list(request):
         "missed_count",
         "last_marked_date",
         "cached_nudge",
-    )
+    ))
 
     total_streak = sum(h.current_streak for h in habits)
-    total_misses = sum(h.missed_count for h in habits)
-    max_days_left = max((3 - h.missed_count for h in habits), default=0)
+    max_misses = max((h.missed_count for h in habits), default=0)   
+    days_left = max(3 - max_misses, 0)                              
 
     return render(
         request,
@@ -375,38 +381,11 @@ def habit_list(request):
             "habits": habits,
             "today": today,
             "total_streak": total_streak,
-            "total_misses": total_misses,
-            "max_days_left": max_days_left,
+            "total_misses": max_misses,      
+            "max_days_left": days_left,      
             "greeting": greeting,
         },
     )
-
-
-# ---------------------------------------------------------------------------
-# Mark habit done
-# ---------------------------------------------------------------------------
-
-
-@login_required
-@require_POST
-@ratelimit(key="user", rate="15/m", method="POST", block=True)
-def mark_habit_done(request, habit_id):
-    if banned_check(request.user):
-        logout(request)
-        return JsonResponse({"status": "banned"}, status=403)
-
-    try:
-        habit = Habit.objects.get(id=habit_id, user=request.user)
-    except Habit.DoesNotExist:
-        return JsonResponse({"status": "not_found"}, status=404)
-
-    result = habit.mark_done()
-
-    total_streak = sum(
-        h.current_streak for h in Habit.objects.filter(user=request.user)
-    )
-    result["total_streak"] = total_streak
-    return JsonResponse(result)
 
 
 # ---------------------------------------------------------------------------
@@ -443,7 +422,6 @@ def add_habit(request):
                 name=habit_name,
                 category=category,
             )
-            logger.info(f"User {request.user.id} created habit: {habit_name}")
 
             if request.headers.get("HX-Request"):
                 return render(
@@ -455,6 +433,36 @@ def add_habit(request):
         return HttpResponse("Server error. Try again.", status=500)
 
     return redirect("habit_list")
+
+
+# ---------------------------------------------------------------------------
+# Mark habit done
+# ---------------------------------------------------------------------------
+
+
+@login_required
+@require_POST
+@ratelimit(key="user", rate="15/m", method="POST", block=True)
+def mark_habit_done(request, habit_id):
+    if banned_check(request.user):
+        logout(request)
+        return JsonResponse({"status": "banned"}, status=403)
+
+    try:
+        habit = Habit.objects.get(id=habit_id, user=request.user)
+    except Habit.DoesNotExist:
+        return JsonResponse({"status": "not_found"}, status=404)
+
+    result = habit.mark_done()
+
+    total_streak = sum(
+        h.current_streak for h in Habit.objects.filter(user=request.user)
+    )
+    result["total_streak"] = total_streak
+    return JsonResponse(result)
+
+
+
 
 
 # ---------------------------------------------------------------------------
@@ -475,68 +483,22 @@ def banned_view(request):
 @require_POST
 def maintenance_trigger(request):
     key = request.headers.get("X-Maintenance-Key") or request.POST.get("key")
-
     if not key or not hmac.compare_digest(key, settings.MAINTENANCE_KEY):
         return JsonResponse({"error": "Unauthorized"}, status=401)
 
     task = request.GET.get("task", "send_nudges")
-
     now = timezone.localtime()
 
-    if task == "generate_nudges":
-        habits = list(
-            Habit.objects.filter(user__is_active=True).select_related("user__profile")
-        )
-        success = 0
-        failed = 0
-        fallback_used = 0
-        lines = []
+    FALLBACK_NUDGES = [
+        "No allow your fire go out. Stay focused.",
+        "You don start, no go back now. Finish wetin you start.",
+        "Every day you hold on, you dey win. Keep going.",
+        "Your future self go thank you. Do it for am.",
+        "The goal no go chase itself. You must move.",
+    ]
 
-        for i, habit in enumerate(habits):
-            try:
-                nudge = generate_habit_nudge(
-                    habit.name,
-                    habit.current_streak,
-                    habit.missed_count,
-                )
-
-                is_fallback = nudge in [
-                    "No allow your fire go out. Stay focused.",
-                    "You don start, no go back now. Finish what you started.",
-                    "Every day you hold on, you dey win. Keep going.",
-                    "Your future self go thank you. Do am for am.",
-                    "The goal no go chase itself. You must move.",
-                ]
-
-                habit.cached_nudge = nudge
-                habit.nudge_generated_at = now
-                habit.save(update_fields=["cached_nudge", "nudge_generated_at"])
-
-                if is_fallback:
-                    fallback_used += 1
-                    lines.append(f"  {habit.name}: FALLBACK — {nudge}")
-                else:
-                    success += 1
-                    lines.append(f"  {habit.name}: {nudge}")
-
-                logger.info(
-                    "Habit %s nudge: %s (fallback=%s)", habit.id, nudge, is_fallback
-                )
-
-            except Exception as e:
-                failed += 1
-                lines.append(f"  {habit.name}: ERROR — {e}")
-                logger.error("Nudge generation failed for habit %s: %s", habit.id, e)
-
-            if i < len(habits) - 1:
-                time.sleep(10)
-
-        summary = (
-            f"Generated {success}/{len(habits)} real nudges. "
-            f"{fallback_used} fallbacks. {failed} errors.\n\n" + "\n".join(lines)
-        )
-        logger.info(summary)
-        return HttpResponse(summary, content_type="text/plain")
+    def pick_nudge(user_id: int) -> str:
+        return FALLBACK_NUDGES[user_id % len(FALLBACK_NUDGES)]
 
     if task == "send_nudges":
         hour = now.hour
@@ -558,23 +520,19 @@ def maintenance_trigger(request):
         sent = 0
         for user, habits in user_habits.items():
             try:
-                habit_blocks = []
-                for habit in habits:
+                nudge = pick_nudge(user.id)
 
-                    nudge = (
-                        habit.cached_nudge
-                        or FALLBACK_NUDGES[habit.id % len(FALLBACK_NUDGES)]
-                    )
-                    habit_blocks.append(
-                        f"*{habit.name}*\n"
-                        f"Streak: {habit.current_streak} days | Misses: {habit.missed_count}/3\n"
-                        f"{nudge}"
-                    )
+                
+                habit_lines = "\n".join(
+                    f"• {h.name}: {h.current_streak} day streak | {h.missed_count}/3 misses"
+                    for h in habits
+                )
 
                 wa_message = (
                     f"*{task_type}*\n\n"
-                    + "\n\n".join(habit_blocks)
-                    + "\n Go to your brwoser to clock in\nhttps://dear-self.onrender.com/habits/"
+                    f"{habit_lines}\n\n"
+                    f"{nudge}\n\n"
+                    f"Go to your browser to clock in\nhttps://dear-self.onrender.com/habits/"
                 )
                 send_whatsapp_message(user.profile.phone_number, wa_message)
                 sent += 1
@@ -582,15 +540,13 @@ def maintenance_trigger(request):
                 logger.error("Send failed for user %s: %s", user.username, e)
 
         return HttpResponse(f"Sent to {sent}/{len(user_habits)} users.")
-    if task == "night_watch":
 
+    if task == "night_watch":
         now = timezone.localtime()
         if now.hour < 6:
             logical_today = (now - timezone.timedelta(days=1)).date()
         else:
             logical_today = now.date()
-
-        yesterday = logical_today - timezone.timedelta(days=1)
 
         stale_habits = list(
             Habit.objects.filter(
@@ -600,13 +556,16 @@ def maintenance_trigger(request):
             .select_related("user__profile")
         )
 
+        banned_users = set()
         banned_count = 0
         for habit in stale_habits:
             result = habit.record_miss()
             if result["status"] == "banned":
                 banned_count += 1
+                banned_users.add(habit.user_id)
                 logger.warning("User %s banned after 3 misses.", habit.user.username)
 
+        
         active_habits = list(
             Habit.objects.filter(user__is_active=True).select_related("user__profile")
         )
@@ -618,22 +577,18 @@ def maintenance_trigger(request):
         sent = 0
         for user, habits in user_habits.items():
             try:
-                habit_blocks = []
-                for habit in habits:
-                    nudge = (
-                        habit.cached_nudge
-                        or FALLBACK_NUDGES[habit.id % len(FALLBACK_NUDGES)]
-                    )
-                    habit_blocks.append(
-                        f"*{habit.name}*\n"
-                        f"Streak: {habit.current_streak} days | Misses: {habit.missed_count}/3\n"
-                        f"{nudge}"
-                    )
+                nudge = pick_nudge(user.id)
+
+                habit_lines = "\n".join(
+                    f"• {h.name}: {h.current_streak} day streak | {h.missed_count}/3 misses"
+                    for h in habits
+                )
 
                 wa_message = (
                     "*NIGHT WATCH*\n\n"
-                    + "\n\n".join(habit_blocks)
-                    + "\n\nhttps://dear-self.onrender.com/habits/"
+                    f"{habit_lines}\n\n"
+                    f"{nudge}\n\n"
+                    "https://dear-self.onrender.com/habits/"
                 )
                 send_whatsapp_message(user.profile.phone_number, wa_message)
                 sent += 1
@@ -646,16 +601,11 @@ def maintenance_trigger(request):
         )
 
     if task == "debug_nudges":
-        habits = Habit.objects.filter(user__is_active=True).select_related(
-            "user__profile"
-        )
-        lines = []
-        for h in habits:
-            lines.append(
-                f"Habit: {h.name} | "
-                f"cached_nudge: '{h.cached_nudge}' | "
-                f"generated_at: {h.nudge_generated_at}"
-            )
+        habits = Habit.objects.filter(user__is_active=True).select_related("user__profile")
+        lines = [
+            f"Habit: {h.name} | streak: {h.current_streak} | misses: {h.missed_count} | last_marked: {h.last_marked_date}"
+            for h in habits
+        ]
         return HttpResponse("\n".join(lines), content_type="text/plain")
 
     return HttpResponseForbidden(f"Unknown task: {task}")

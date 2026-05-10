@@ -23,6 +23,7 @@ class Profile(models.Model):
     phone_number = models.CharField(
         validators=[phone_regex], max_length=13, unique=True
     )
+    user_email = models.EmailField(unique=True, blank=True, null=True)
     timezone = models.CharField(max_length=50, default="Africa/Lagos")
     is_whatsapp_verified = models.BooleanField(default=False)
 
@@ -120,14 +121,6 @@ class Habit(models.Model):
         self.missed_count += 1
         self.current_streak = 0
 
-        today = get_logical_date()
-        yesterday = today - timezone.timedelta(days=1)
-        self.last_marked_date = yesterday
-
-        DailyRecord.objects.update_or_create(
-            habit=self, date=yesterday, defaults={"completed": False}
-        )
-
         banned = False
         if self.missed_count >= 3:
             user = self.user
@@ -135,7 +128,7 @@ class Habit(models.Model):
             user.save(update_fields=["is_active"])
             banned = True
 
-        self.save(update_fields=["missed_count", "current_streak", "last_marked_date"])
+        self.save(update_fields=["missed_count", "current_streak"])
 
         return {
             "status": "banned" if banned else "missed",
